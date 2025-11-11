@@ -1,13 +1,18 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import type { Technique, EffectInstance, PowerLevel, Force, Effect, SelectedEffectOption } from './types';
 import { POWER_LEVELS } from './constants';
 import TechniqueCreator from './components/TechniqueCreator';
 import TechniqueCard from './components/TechniqueCard';
 import { initialTechniqueState } from './constants';
 
+// Add htmlToImage to the global scope since it's from a CDN
+declare const htmlToImage: any;
+
 function App() {
   const [technique, setTechnique] = useState<Technique>(initialTechniqueState);
   const [copyButtonText, setCopyButtonText] = useState('Copiar como Texto');
+  const [exportButtonText, setExportButtonText] = useState('Exportar como Imagen');
+  const techniqueCardRef = useRef<HTMLDivElement>(null);
 
 
   const pcBudget = useMemo(() => {
@@ -118,6 +123,31 @@ ${effectLines || 'Ningún efecto añadido.'}
     });
   };
 
+  const handleExportImage = () => {
+    if (!techniqueCardRef.current) {
+      setExportButtonText('Error');
+      setTimeout(() => setExportButtonText('Exportar como Imagen'), 2000);
+      return;
+    }
+    
+    setExportButtonText('Exportando...');
+
+    htmlToImage.toPng(techniqueCardRef.current, { cacheBust: true, pixelRatio: 2 })
+      .then((dataUrl: string) => {
+        const link = document.createElement('a');
+        link.download = `${technique.name.replace(/\s+/g, '-').toLowerCase() || 'tecnica-rpg'}.png`;
+        link.href = dataUrl;
+        link.click();
+        setExportButtonText('¡Exportado!');
+        setTimeout(() => setExportButtonText('Exportar como Imagen'), 2000);
+      })
+      .catch((err: Error) => {
+        console.error('Error al exportar imagen:', err);
+        setExportButtonText('Error');
+        setTimeout(() => setExportButtonText('Exportar como Imagen'), 2000);
+      });
+  };
+
   return (
     <div className="min-h-screen text-slate-800 font-sans p-4 sm:p-6 lg:p-8">
       <div className="container mx-auto">
@@ -147,6 +177,7 @@ ${effectLines || 'Ningún efecto añadido.'}
           <div className="lg:col-span-1">
              <div className="sticky top-8">
                 <TechniqueCard 
+                  ref={techniqueCardRef}
                   technique={technique} 
                   resistanceCost={resistanceCost}
                   totalPcCost={totalPcCost}
@@ -154,6 +185,13 @@ ${effectLines || 'Ningún efecto añadido.'}
                   removeEffect={handleRemoveEffect}
                 />
                  <div className="mt-4 flex flex-col gap-2">
+                    <button
+                        onClick={handleExportImage}
+                        disabled={!technique.level || exportButtonText !== 'Exportar como Imagen'}
+                        className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {exportButtonText}
+                    </button>
                     <button
                         onClick={handleCopy}
                         disabled={!technique.level}

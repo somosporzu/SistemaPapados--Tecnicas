@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import type { Technique, EffectInstance } from '../types';
 import { FORCES } from '../constants';
 
@@ -30,9 +30,9 @@ const RemoveIcon: React.FC = () => (
 );
 
 
-const TechniqueCard: React.FC<TechniqueCardProps> = ({ technique, resistanceCost, totalPcCost, pcBudget, removeEffect }) => {
+const TechniqueCard = forwardRef<HTMLDivElement, TechniqueCardProps>(({ technique, resistanceCost, totalPcCost, pcBudget, removeEffect }, ref) => {
   return (
-    <div className="bg-white/60 border border-slate-300 rounded-lg p-6 shadow-lg space-y-4">
+    <div ref={ref} className="bg-white/60 border border-slate-300 rounded-lg p-6 shadow-lg space-y-4">
       <h3 className="text-2xl font-bold text-center text-slate-800 border-b-2 border-slate-300 pb-3">Técnica Resultante</h3>
       
       <div>
@@ -135,6 +135,6 @@ const TechniqueCard: React.FC<TechniqueCardProps> = ({ technique, resistanceCost
 
     </div>
   );
-};
+});
 
 export default TechniqueCard;
