@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 // Fix: Import PowerLevel and Force as values, not just types, because they are enums used at runtime.
 import { type Technique, PowerLevel, Force, type Effect, type SelectedEffectOption } from '../types';
 import { FORCES, POWER_LEVELS, EFFECT_CATEGORIES, EFFECTS } from '../constants';
@@ -24,6 +24,8 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
   pcBudget,
   totalPcCost,
 }) => {
+  const [selectedCategory, setSelectedCategory] = useState<string>(EFFECT_CATEGORIES[0]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setTechnique(prev => ({ ...prev, [name]: value }));
@@ -98,21 +100,32 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
           {!technique.level && <p className="text-slate-600 text-center p-4 bg-slate-100/50 rounded-md">Por favor, selecciona un Nivel de Poder para ver los efectos disponibles.</p>}
           {technique.level && (
             <div className="space-y-4">
-              {EFFECT_CATEGORIES.map(category => (
-                <div key={category}>
-                   <h3 className="text-xl font-semibold text-slate-700 mb-3 sticky top-0 bg-white/80 backdrop-blur-sm py-2 z-10">{category}</h3>
-                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                     {EFFECTS.filter(e => e.category === category && isEffectCompatible(e)).map(effect => (
-                       <EffectCard 
-                         key={effect.id}
-                         effect={effect}
-                         onAdd={addEffect}
-                         canAdd={canAddEffect}
-                       />
-                     ))}
-                   </div>
-                </div>
-              ))}
+              <div className="flex flex-wrap gap-2 border-b border-slate-300 pb-3 mb-3">
+                {EFFECT_CATEGORIES.map(category => (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`px-3 py-1.5 text-sm font-semibold rounded-md transition-colors duration-200 ${
+                      selectedCategory === category
+                        ? 'bg-teal-500 text-white shadow'
+                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                    }`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+
+               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                 {EFFECTS.filter(e => e.category === selectedCategory && isEffectCompatible(e)).map(effect => (
+                   <EffectCard 
+                     key={effect.id}
+                     effect={effect}
+                     onAdd={addEffect}
+                     canAdd={canAddEffect}
+                   />
+                 ))}
+               </div>
             </div>
           )}
        </div>
