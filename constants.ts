@@ -9,12 +9,12 @@ export const POWER_LEVELS: Record<PowerLevel, { resistanceCost: number, pcBudget
 };
 
 export const FORCES: Record<Force, { description: string, color: string }> = {
-    [Force.DESTRUCTION]: { description: "La senda de quienes rompen y terminan. Daño y combate.", color: "red" },
-    [Force.CONSERVATION]: { description: "La senda del cuidado y la preservación. Curación y defensas.", color: "green" },
-    [Force.TRANSFORMATION]: { description: "La senda del cambio constante. Control elemental y del entorno.", color: "yellow" },
-    [Force.CREATION]: { description: "La senda de dar forma a lo nuevo. Invocaciones e ilusiones.", color: "blue" },
-    [Force.ORDER]: { description: "La senda del equilibrio y la estructura. Control y sellos.", color: "gray" },
-    [Force.CHAOS]: { description: "La senda de lo indomable y contradictorio. Efectos aleatorios y daño persistente.", color: "purple" }
+    [Force.DESTRUCTION]: { description: "La senda de quienes rompen y terminan. Daño y combate.", color: "rose" },
+    [Force.CONSERVATION]: { description: "La senda del cuidado y la preservación. Curación y defensas.", color: "emerald" },
+    [Force.TRANSFORMATION]: { description: "La senda del cambio constante. Control elemental y del entorno.", color: "amber" },
+    [Force.CREATION]: { description: "La senda de dar forma a lo nuevo. Invocaciones e ilusiones.", color: "sky" },
+    [Force.ORDER]: { description: "La senda del equilibrio y la estructura. Control y sellos.", color: "slate" },
+    [Force.CHAOS]: { description: "La senda de lo indomable y contradictorio. Efectos aleatorios y daño persistente.", color: "violet" }
 };
 
 export const initialTechniqueState: Technique = {
