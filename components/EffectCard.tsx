@@ -4,7 +4,7 @@ import type { Effect, EffectOption, SelectedEffectOption } from '../types';
 interface EffectCardProps {
     effect: Effect;
     onAdd: (effect: Effect, selectedOptions: SelectedEffectOption[]) => void;
-    canAdd: (cost: number) => boolean;
+    canAdd: (baseCost: number, optionsCost: number) => boolean;
 }
 
 const PlusIcon: React.FC = () => (
@@ -35,15 +35,30 @@ export const EffectCard: React.FC<EffectCardProps> = ({ effect, onAdd, canAdd })
         setSelectedOptions(initialSelections);
     }, [effect]);
 
-    const handleOptionChange = (option: EffectOption, value: string) => {
+    const handleOptionChange = (option: EffectOption, value: string, optionIdOverride?: string) => {
+        const optionId = optionIdOverride || option.id;
+
         setSelectedOptions(prev => {
-            const existing = prev.find(o => o.optionId === option.id);
+            const existing = prev.find(o => o.optionId === optionId);
+
             if (option.type === 'select') {
                 const selectedValue = option.values?.find(v => v.name === value);
-                if (!selectedValue) return prev;
-                const newOption: SelectedEffectOption = { optionId: option.id, name: option.name, value: selectedValue.name, cost: selectedValue.cost };
-                return existing ? prev.map(o => o.optionId === option.id ? newOption : o) : [...prev, newOption];
+                 if (!selectedValue) {
+                    // Handle deselection for extra states
+                    if (optionId.startsWith('extra_estado_')) {
+                        return prev.filter(o => o.optionId !== optionId);
+                    }
+                    return prev;
+                };
+
+                const newOption: SelectedEffectOption = { optionId, name: option.name, value: selectedValue.name, cost: selectedValue.cost };
+                if (existing) {
+                    return prev.map(o => (o.optionId === optionId ? newOption : o));
+                } else {
+                    return [...prev, newOption];
+                }
             }
+
             if (option.type === 'boolean') {
                 const isChecked = value === 'true';
                 if (isChecked) {
@@ -57,12 +72,98 @@ export const EffectCard: React.FC<EffectCardProps> = ({ effect, onAdd, canAdd })
         });
     };
 
-    const totalCost = useMemo(() => {
+    const { optionsCost, totalCost } = useMemo(() => {
         const optionsCost = selectedOptions.reduce((sum, opt) => sum + opt.cost, 0);
-        return effect.baseCost + optionsCost;
+        return { 
+            optionsCost,
+            totalCost: effect.baseCost + optionsCost 
+        };
     }, [effect.baseCost, selectedOptions]);
+    
+    // --- Special logic for 'pen_estado_alterado' ---
+    const multiStateSelection = useMemo(() => {
+        if (effect.id !== 'pen_estado_alterado') return null;
+        return selectedOptions.find(o => o.optionId === 'multiple_estados');
+    }, [effect.id, selectedOptions]);
 
-    const isAddDisabled = !canAdd(totalCost);
+    const numExtraStates = useMemo(() => {
+        if (!multiStateSelection) return 0;
+        switch (multiStateSelection.value) {
+            case '2 estados': return 1;
+            case '3 estados': return 2;
+            case '4 estados': return 3;
+            default: return 0;
+        }
+    }, [multiStateSelection]);
+
+     // Cleanup effect when numExtraStates decreases
+    useEffect(() => {
+        if (effect.id !== 'pen_estado_alterado') return;
+        
+        setSelectedOptions(prev => {
+            const currentExtraStates = prev.filter(o => o.optionId.startsWith('extra_estado_'));
+            if (currentExtraStates.length > numExtraStates) {
+                return prev.filter(o => {
+                    if (!o.optionId.startsWith('extra_estado_')) return true;
+                    const index = parseInt(o.optionId.split('_')[2], 10);
+                    return index <= numExtraStates;
+                });
+            }
+            return prev;
+        });
+
+    }, [numExtraStates, effect.id]);
+
+
+    const allPossibleStates = useMemo(() => {
+        if (effect.id !== 'pen_estado_alterado') return [];
+        const estadoOption = effect.options?.find(o => o.id === 'estado_select');
+        return estadoOption?.values || [];
+    }, [effect]);
+
+    const selectedStateValues = useMemo(() => {
+        return selectedOptions
+            .filter(o => o.optionId === 'estado_select' || o.optionId.startsWith('extra_estado_'))
+            .map(o => o.value);
+    }, [selectedOptions]);
+
+    const renderExtraStateSelectors = () => {
+        if (effect.id !== 'pen_estado_alterado' || numExtraStates === 0) return null;
+
+        return Array.from({ length: numExtraStates }).map((_, index) => {
+            const extraOptionId = `extra_estado_${index + 1}`;
+            const currentlySelectedExtraState = selectedOptions.find(o => o.optionId === extraOptionId)?.value;
+            
+            const availableStates = allPossibleStates.filter(
+                state => !selectedStateValues.includes(state.name) || state.name === currentlySelectedExtraState
+            );
+
+            const extraStateOption: EffectOption = {
+                id: extraOptionId,
+                name: `Estado Adicional ${index + 1}`,
+                type: 'select',
+                values: availableStates.map(s => ({name: s.name, cost: 0}))
+            };
+
+            return (
+                <div key={extraStateOption.id}>
+                    <label className="text-xs font-semibold text-slate-600 block mb-1">{extraStateOption.name}</label>
+                    <p className="text-xs text-slate-500 mb-1 italic">Este estado tendrá una ND de salvación 2 puntos inferior.</p>
+                    <select 
+                        value={currentlySelectedExtraState || ''}
+                        onChange={(e) => handleOptionChange(extraStateOption, e.target.value, extraStateOption.id)}
+                        className="w-full text-xs bg-slate-100 border border-slate-300 rounded-md py-1 px-2 focus:ring-violet-500 focus:border-violet-500 transition"
+                    >
+                        <option value="">Selecciona un estado...</option>
+                        {extraStateOption.values?.map(v => <option key={v.name} value={v.name}>{v.name}</option>)}
+                    </select>
+                </div>
+            )
+        })
+    }
+    // --- End special logic ---
+
+    const isAddDisabled = !canAdd(effect.baseCost, optionsCost);
     const isDisadvantage = effect.category === "Desventajas";
 
     return (
@@ -81,6 +182,7 @@ export const EffectCard: React.FC<EffectCardProps> = ({ effect, onAdd, canAdd })
                             {option.type === 'select' && option.values && (
                                 <select 
                                     onChange={(e) => handleOptionChange(option, e.target.value)}
+                                    value={selectedOptions.find(o => o.optionId === option.id)?.value || ''}
                                     className="w-full text-xs bg-slate-100 border border-slate-300 rounded-md py-1 px-2 focus:ring-violet-500 focus:border-violet-500 transition"
                                 >
                                     {option.values.map(v => <option key={v.name} value={v.name}>{v.name} ({v.cost >= 0 ? '+' : ''}{v.cost} PC)</option>)}
@@ -88,12 +190,15 @@ export const EffectCard: React.FC<EffectCardProps> = ({ effect, onAdd, canAdd })
                             )}
                             {option.type === 'boolean' && (
                                 <label className="flex items-center space-x-2 cursor-pointer">
-                                    <input type="checkbox" onChange={(e) => handleOptionChange(option, e.target.checked.toString())} className="form-checkbox bg-slate-200 border-slate-300 rounded text-violet-500 focus:ring-violet-500"/>
+                                    <input type="checkbox" 
+                                    checked={!!selectedOptions.find(o => o.optionId === option.id)}
+                                    onChange={(e) => handleOptionChange(option, e.target.checked.toString())} className="form-checkbox bg-slate-200 border-slate-300 rounded text-violet-500 focus:ring-violet-500"/>
                                     <span className="text-xs text-slate-700">Activar</span>
                                 </label>
                             )}
                         </div>
                     ))}
+                    {renderExtraStateSelectors()}
                 </div>
             )}
 

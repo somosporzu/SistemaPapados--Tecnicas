@@ -533,6 +533,7 @@ export const EFFECTS: Effect[] = [
                 name: 'Múltiples estados',
                 type: 'select',
                 values: [
+                    { name: 'Ninguno', cost: 0 },
                     { name: '2 estados', cost: 3 },
                     { name: '3 estados', cost: 7 },
                     { name: '4 estados', cost: 12 },

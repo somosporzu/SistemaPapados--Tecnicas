@@ -37,11 +37,12 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
       return !effect.restrictions.includes(technique.force);
   };
   
-  const canAddEffect = (cost: number): boolean => {
+  const canAddEffect = (baseCost: number, optionsCost: number): boolean => {
       if (!technique.level) return false;
+      const totalEffectCost = baseCost + optionsCost;
       const isSecondary = technique.effects.length > 0;
-      const secondaryCost = isSecondary && cost > 0 ? 2 : 0;
-      const totalCostToAdd = cost + secondaryCost;
+      const secondaryCost = isSecondary && totalEffectCost > 0 ? 2 : 0;
+      const totalCostToAdd = totalEffectCost + secondaryCost;
       return totalPcCost + totalCostToAdd <= pcBudget;
   };
 

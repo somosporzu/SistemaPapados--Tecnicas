@@ -79,10 +79,42 @@ const TechniqueCard: React.FC<TechniqueCardProps> = ({ technique, resistanceCost
                       <span className="font-medium text-slate-800">{instance.effect.name}</span>
                       {instance.isSecondary && <span className="text-xs text-violet-600/80 ml-1">(Secundario)</span>}
                        {instance.selectedOptions.length > 0 && (
-                        <div className="text-xs text-slate-600 mt-1 flex flex-wrap gap-1">
-                            {instance.selectedOptions.map(opt => (
-                                <span key={opt.optionId} className="bg-slate-200 px-1.5 py-0.5 rounded">{opt.value === 'true' ? opt.name : opt.value}</span>
-                            ))}
+                        <div className="text-xs text-slate-600 mt-1 flex flex-col items-start gap-1">
+                            {(() => {
+                                if (instance.effect.id === 'pen_estado_alterado') {
+                                    const mainState = instance.selectedOptions.find(opt => opt.optionId === 'estado_select');
+                                    const extraStates = instance.selectedOptions.filter(opt => opt.optionId.startsWith('extra_estado_'));
+                                    const otherOptions = instance.selectedOptions.filter(opt => opt.optionId !== 'estado_select' && !opt.optionId.startsWith('extra_estado_'));
+                                    
+                                    const stateElements: React.ReactNode[] = [];
+                                    if (mainState?.value) {
+                                         stateElements.push(<span key="main_state" className="bg-slate-200 px-1.5 py-0.5 rounded">{mainState.value}</span>);
+                                    }
+                                    if (extraStates.length > 0) {
+                                        const extraStatesText = extraStates.map(s => s.value).join(', ');
+                                        stateElements.push(<span key="extra_states" className="bg-slate-200 px-1.5 py-0.5 rounded">{extraStatesText} (ND -2)</span>);
+                                    }
+
+                                    return (
+                                        <>
+                                            <div className="flex flex-wrap gap-1">
+                                                {otherOptions.map(opt => (
+                                                    <span key={opt.optionId} className="bg-slate-200 px-1.5 py-0.5 rounded">{opt.value === 'true' ? opt.name : opt.value}</span>
+                                                ))}
+                                            </div>
+                                            {stateElements.length > 0 && <div className="flex flex-wrap gap-1">{stateElements}</div>}
+                                        </>
+                                    );
+                                }
+                                // Default rendering for other effects
+                                return (
+                                    <div className="flex flex-wrap gap-1">
+                                        {instance.selectedOptions.map(opt => (
+                                            <span key={opt.optionId} className="bg-slate-200 px-1.5 py-0.5 rounded">{opt.value === 'true' ? opt.name : opt.value}</span>
+                                        ))}
+                                    </div>
+                                );
+                            })()}
                         </div>
                     )}
                     </div>
