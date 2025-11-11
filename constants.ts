@@ -515,17 +515,27 @@ export const EFFECTS: Effect[] = [
                 name: 'Estado a imponer',
                 type: 'select',
                 values: [
-                    { name: 'Envenenado (1d6)', cost: 5 },
-                    { name: 'Envenenado Mayor (2d6)', cost: 8 },
-                    { name: 'Quemado (1d6)', cost: 5 },
-                    { name: 'Quemado Mayor (1d6)', cost: 8 }, // Typo in book likely, using cost 8 for consistency
-                    { name: 'Asfixiado', cost: 5 },
-                    { name: 'Inmovilizado', cost: 5 },
-                    { name: 'Aturdido', cost: 8 },
-                    { name: 'Asustado', cost: 8 },
-                    { name: 'Encantado', cost: 8 },
-                    { name: 'Controlado', cost: 10 },
-                    { name: 'Dormido', cost: 5 },
+                    { name: 'Envenenado (1d6) (x2)', cost: 10 },
+                    { name: 'Envenenado Mayor (2d6) (x2)', cost: 16 },
+                    { name: 'Quemado (1d6) (x2)', cost: 10 },
+                    { name: 'Quemado Mayor (1d6) (x2)', cost: 16 },
+                    { name: 'Asfixiado (x2)', cost: 10 },
+                    { name: 'Inmovilizado (x2)', cost: 10 },
+                    { name: 'Aturdido (x2)', cost: 16 },
+                    { name: 'Asustado (x2)', cost: 16 },
+                    { name: 'Encantado (x2)', cost: 16 },
+                    { name: 'Controlado (x2)', cost: 20 },
+                    { name: 'Dormido (x2)', cost: 10 },
+                ]
+            },
+            {
+                id: 'multiple_estados',
+                name: 'Múltiples estados',
+                type: 'select',
+                values: [
+                    { name: '2 estados', cost: 3 },
+                    { name: '3 estados', cost: 7 },
+                    { name: '4 estados', cost: 12 },
                 ]
             },
             {
