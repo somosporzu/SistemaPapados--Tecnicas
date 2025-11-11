@@ -1,4 +1,3 @@
-
 import React from 'react';
 // Fix: Import PowerLevel and Force as values, not just types, because they are enums used at runtime.
 import { type Technique, PowerLevel, Force, type Effect, type SelectedEffectOption } from '../types';
@@ -47,8 +46,8 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
   return (
     <div className="space-y-8">
       {/* Step 1 & 2: Basic Info */}
-      <div className="bg-slate-800/50 p-6 rounded-lg border border-slate-700">
-        <h2 className="text-2xl font-bold text-amber-400 mb-4 border-b-2 border-amber-400/20 pb-2">Paso 1: Concepto y Poder</h2>
+      <div className="bg-stone-200/60 p-6 rounded-lg border border-stone-400">
+        <h2 className="text-2xl font-bold text-orange-800 mb-4 border-b-2 border-orange-800/20 pb-2">Paso 1: Concepto y Poder</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <input
@@ -57,7 +56,7 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
               placeholder="Nombre de la Técnica"
               value={technique.name}
               onChange={handleInputChange}
-              className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-amber-500 focus:border-amber-500 transition"
+              className="w-full bg-stone-50 border border-stone-400 rounded-md py-2 px-3 focus:ring-orange-600 focus:border-orange-600 transition"
             />
             <textarea
               name="description"
@@ -65,25 +64,25 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
               value={technique.description}
               onChange={handleInputChange}
               rows={4}
-              className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-amber-500 focus:border-amber-500 transition"
+              className="w-full bg-stone-50 border border-stone-400 rounded-md py-2 px-3 focus:ring-orange-600 focus:border-orange-600 transition"
             />
           </div>
           <div className="space-y-4">
             <div>
-                <h3 className="font-semibold mb-2 text-slate-300">Nivel de Poder</h3>
+                <h3 className="font-semibold mb-2 text-stone-700">Nivel de Poder</h3>
                 <div className="flex flex-wrap gap-2">
                     {Object.values(PowerLevel).map(level => (
-                        <button key={level} onClick={() => setLevel(level)} className={`px-3 py-1 text-sm rounded-full transition ${technique.level === level ? 'bg-amber-500 text-slate-900 font-bold' : 'bg-slate-700 hover:bg-slate-600'}`}>
+                        <button key={level} onClick={() => setLevel(level)} className={`px-3 py-1 text-sm rounded-full transition ${technique.level === level ? 'bg-orange-700 text-white font-bold' : 'bg-stone-300 hover:bg-stone-400'}`}>
                             {level}
                         </button>
                     ))}
                 </div>
             </div>
             <div>
-                <h3 className="font-semibold mb-2 text-slate-300">Fuerza Dominante</h3>
+                <h3 className="font-semibold mb-2 text-stone-700">Fuerza Dominante</h3>
                 <div className="flex flex-wrap gap-2">
                     {Object.values(Force).map(force => (
-                        <button key={force} onClick={() => setForce(force)} className={`px-3 py-1 text-sm rounded-full transition ${technique.force === force ? `bg-${FORCES[force].color}-500 text-slate-900 font-bold` : 'bg-slate-700 hover:bg-slate-600'}`}>
+                        <button key={force} onClick={() => setForce(force)} className={`px-3 py-1 text-sm rounded-full transition ${technique.force === force ? `bg-${FORCES[force].color}-600 text-white font-bold` : 'bg-stone-300 hover:bg-stone-400'}`}>
                             {force}
                         </button>
                     ))}
@@ -94,14 +93,14 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
       </div>
 
       {/* Step 3: Effects */}
-       <div className="bg-slate-800/50 p-6 rounded-lg border border-slate-700">
-         <h2 className="text-2xl font-bold text-teal-400 mb-4 border-b-2 border-teal-400/20 pb-2">Paso 2: Compra de Efectos</h2>
-          {!technique.level && <p className="text-slate-400 text-center p-4 bg-slate-900/50 rounded-md">Por favor, selecciona un Nivel de Poder para ver los efectos disponibles.</p>}
+       <div className="bg-stone-200/60 p-6 rounded-lg border border-stone-400">
+         <h2 className="text-2xl font-bold text-sky-800 mb-4 border-b-2 border-sky-800/20 pb-2">Paso 2: Compra de Efectos</h2>
+          {!technique.level && <p className="text-stone-600 text-center p-4 bg-stone-50/50 rounded-md">Por favor, selecciona un Nivel de Poder para ver los efectos disponibles.</p>}
           {technique.level && (
             <div className="space-y-4">
               {EFFECT_CATEGORIES.map(category => (
                 <div key={category}>
-                   <h3 className="text-xl font-semibold text-slate-300 mb-3 sticky top-0 bg-slate-800/80 backdrop-blur-sm py-2 z-10">{category}</h3>
+                   <h3 className="text-xl font-semibold text-stone-700 mb-3 sticky top-0 bg-stone-200/80 backdrop-blur-sm py-2 z-10">{category}</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                      {EFFECTS.filter(e => e.category === category && isEffectCompatible(e)).map(effect => (
                        <EffectCard 

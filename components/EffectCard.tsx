@@ -63,33 +63,33 @@ export const EffectCard: React.FC<EffectCardProps> = ({ effect, onAdd, canAdd })
     }, [effect.baseCost, selectedOptions]);
 
     const isAddDisabled = !canAdd(totalCost);
-    const isDisadvantage = effect.baseCost < 0;
+    const isDisadvantage = effect.baseCost < 0 || totalCost < 0;
 
     return (
-        <div className={`flex flex-col justify-between p-4 rounded-lg border transition-all duration-200 ${isDisadvantage ? 'bg-red-900/20 border-red-500/30' : 'bg-slate-900/50 border-slate-700'}`}>
+        <div className={`flex flex-col justify-between p-4 rounded-lg border transition-all duration-200 ${isDisadvantage ? 'bg-red-200/50 border-red-400/50' : 'bg-stone-50/50 border-stone-400'}`}>
             <div>
-                <h4 className={`font-bold ${isDisadvantage ? 'text-red-300' : 'text-slate-200'}`}>{effect.name}</h4>
-                <p className="text-xs text-slate-400 mt-1">{effect.description}</p>
+                <h4 className={`font-bold ${isDisadvantage ? 'text-red-800' : 'text-stone-800'}`}>{effect.name}</h4>
+                <p className="text-xs text-stone-600 mt-1">{effect.description}</p>
             </div>
 
             {effect.options && effect.options.length > 0 && (
                  <div className="space-y-2 mt-3">
                     {effect.options.map(option => (
                         <div key={option.id}>
-                            <label className="text-xs font-semibold text-slate-400 block mb-1">{option.name}</label>
-                            {option.description && <p className="text-xs text-slate-500 mb-1 italic">{option.description}</p>}
+                            <label className="text-xs font-semibold text-stone-600 block mb-1">{option.name}</label>
+                            {option.description && <p className="text-xs text-stone-500 mb-1 italic">{option.description}</p>}
                             {option.type === 'select' && option.values && (
                                 <select 
                                     onChange={(e) => handleOptionChange(option, e.target.value)}
-                                    className="w-full text-xs bg-slate-800 border border-slate-600 rounded-md py-1 px-2 focus:ring-amber-500 focus:border-amber-500 transition"
+                                    className="w-full text-xs bg-stone-200 border border-stone-400 rounded-md py-1 px-2 focus:ring-orange-600 focus:border-orange-600 transition"
                                 >
                                     {option.values.map(v => <option key={v.name} value={v.name}>{v.name} ({v.cost >= 0 ? '+' : ''}{v.cost} PC)</option>)}
                                 </select>
                             )}
                             {option.type === 'boolean' && (
                                 <label className="flex items-center space-x-2 cursor-pointer">
-                                    <input type="checkbox" onChange={(e) => handleOptionChange(option, e.target.checked.toString())} className="form-checkbox bg-slate-700 border-slate-500 rounded text-amber-500 focus:ring-amber-500"/>
-                                    <span className="text-xs text-slate-300">Activar</span>
+                                    <input type="checkbox" onChange={(e) => handleOptionChange(option, e.target.checked.toString())} className="form-checkbox bg-stone-300 border-stone-400 rounded text-orange-600 focus:ring-orange-600"/>
+                                    <span className="text-xs text-stone-700">Activar</span>
                                 </label>
                             )}
                         </div>
@@ -97,8 +97,8 @@ export const EffectCard: React.FC<EffectCardProps> = ({ effect, onAdd, canAdd })
                 </div>
             )}
 
-            <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-700/50">
-                <span className={`text-sm font-bold ${isDisadvantage || totalCost < 0 ? 'text-green-400' : 'text-teal-400'}`}>
+            <div className="flex justify-between items-center mt-3 pt-3 border-t border-stone-400/50">
+                <span className={`text-sm font-bold ${isDisadvantage ? 'text-green-700' : 'text-orange-700'}`}>
                     Coste Total: {totalCost} PC
                 </span>
                 <button
@@ -106,8 +106,8 @@ export const EffectCard: React.FC<EffectCardProps> = ({ effect, onAdd, canAdd })
                     disabled={isAddDisabled}
                     className={`flex items-center gap-1 text-xs font-bold py-1 px-2 rounded-md transition-colors duration-200 ${
                         isDisadvantage 
-                        ? 'bg-green-600 hover:bg-green-500 text-white disabled:bg-slate-600 disabled:cursor-not-allowed' 
-                        : 'bg-teal-600 hover:bg-teal-500 text-white disabled:bg-slate-600 disabled:cursor-not-allowed'
+                        ? 'bg-green-700 hover:bg-green-600 text-white disabled:bg-stone-400 disabled:opacity-50 disabled:cursor-not-allowed' 
+                        : 'bg-orange-700 hover:bg-orange-600 text-white disabled:bg-stone-400 disabled:opacity-50 disabled:cursor-not-allowed'
                     }`}
                 >
                     <PlusIcon /> Añadir

@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import type { Technique, EffectInstance, PowerLevel, Force, Effect, SelectedEffectOption } from './types';
 import { POWER_LEVELS } from './constants';
@@ -120,13 +119,13 @@ ${effectLines || 'Ningún efecto añadido.'}
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-200 font-sans p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen text-stone-800 font-sans p-4 sm:p-6 lg:p-8">
       <div className="container mx-auto">
         <header className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-100 tracking-tight">
+          <h1 className="text-4xl md:text-5xl font-bold text-stone-900 tracking-tight">
             Creador de Técnicas RPG
           </h1>
-          <p className="text-slate-400 mt-2 max-w-2xl mx-auto">
+          <p className="text-stone-600 mt-2 max-w-2xl mx-auto">
             Sigue los pasos para diseñar una técnica equilibrada para tu juego de rol, basada en el sistema de Puntos de Creación.
           </p>
         </header>
@@ -158,13 +157,13 @@ ${effectLines || 'Ningún efecto añadido.'}
                     <button
                         onClick={handleCopy}
                         disabled={!technique.level}
-                        className="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:bg-slate-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-amber-700 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:bg-stone-400 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {copyButtonText}
                     </button>
                     <button
                         onClick={handleReset}
-                        className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200"
+                        className="w-full bg-red-800 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200"
                     >
                         Empezar de Nuevo
                     </button>
