@@ -147,12 +147,12 @@ export const EffectCard: React.FC<EffectCardProps> = ({ effect, onAdd, canAdd })
 
             return (
                 <div key={extraStateOption.id}>
-                    <label className="text-xs font-semibold text-slate-600 block mb-1">{extraStateOption.name}</label>
+                    <label className="text-xs font-semibold text-slate-400 block mb-1">{extraStateOption.name}</label>
                     <p className="text-xs text-slate-500 mb-1 italic">Este estado tendrá una ND de salvación 2 puntos inferior.</p>
                     <select 
                         value={currentlySelectedExtraState || ''}
                         onChange={(e) => handleOptionChange(extraStateOption, e.target.value, extraStateOption.id)}
-                        className="w-full text-xs bg-slate-100 border border-slate-300 rounded-md py-1 px-2 focus:ring-violet-500 focus:border-violet-500 transition"
+                        className="w-full text-xs bg-slate-800 border border-slate-600 rounded-md py-1 px-2 text-slate-200 focus:ring-orange-500 focus:border-orange-500 transition"
                     >
                         <option value="">Selecciona un estado...</option>
                         {extraStateOption.values?.map(v => <option key={v.name} value={v.name}>{v.name}</option>)}
@@ -167,23 +167,23 @@ export const EffectCard: React.FC<EffectCardProps> = ({ effect, onAdd, canAdd })
     const isDisadvantage = effect.category === "Desventajas";
 
     return (
-        <div className={`flex flex-col justify-between p-4 rounded-lg border transition-all duration-200 ${isDisadvantage ? 'bg-emerald-50/50 border-emerald-300' : 'bg-white border-slate-300'}`}>
+        <div className={`flex flex-col justify-between p-4 rounded-lg border transition-all duration-200 ${isDisadvantage ? 'bg-emerald-900/20 border-emerald-700' : 'bg-slate-900/50 border-slate-700'}`}>
             <div>
-                <h4 className={`font-bold ${isDisadvantage ? 'text-emerald-800' : 'text-slate-800'}`}>{effect.name}</h4>
-                <p className="text-xs text-slate-600 mt-1">{effect.description}</p>
+                <h4 className={`font-bold ${isDisadvantage ? 'text-emerald-400' : 'text-slate-200'}`}>{effect.name}</h4>
+                <p className="text-xs text-slate-400 mt-1">{effect.description}</p>
             </div>
 
             {effect.options && effect.options.length > 0 && (
                  <div className="space-y-2 mt-3">
                     {effect.options.map(option => (
                         <div key={option.id}>
-                            <label className="text-xs font-semibold text-slate-600 block mb-1">{option.name}</label>
+                            <label className="text-xs font-semibold text-slate-400 block mb-1">{option.name}</label>
                             {option.description && <p className="text-xs text-slate-500 mb-1 italic">{option.description}</p>}
                             {option.type === 'select' && option.values && (
                                 <select 
                                     onChange={(e) => handleOptionChange(option, e.target.value)}
                                     value={selectedOptions.find(o => o.optionId === option.id)?.value || ''}
-                                    className="w-full text-xs bg-slate-100 border border-slate-300 rounded-md py-1 px-2 focus:ring-violet-500 focus:border-violet-500 transition"
+                                    className="w-full text-xs bg-slate-800 border border-slate-600 rounded-md py-1 px-2 text-slate-200 focus:ring-orange-500 focus:border-orange-500 transition"
                                 >
                                     {option.values.map(v => <option key={v.name} value={v.name}>{v.name} ({v.cost >= 0 ? '+' : ''}{v.cost} PC)</option>)}
                                 </select>
@@ -192,8 +192,8 @@ export const EffectCard: React.FC<EffectCardProps> = ({ effect, onAdd, canAdd })
                                 <label className="flex items-center space-x-2 cursor-pointer">
                                     <input type="checkbox" 
                                     checked={!!selectedOptions.find(o => o.optionId === option.id)}
-                                    onChange={(e) => handleOptionChange(option, e.target.checked.toString())} className="form-checkbox bg-slate-200 border-slate-300 rounded text-violet-500 focus:ring-violet-500"/>
-                                    <span className="text-xs text-slate-700">Activar</span>
+                                    onChange={(e) => handleOptionChange(option, e.target.checked.toString())} className="form-checkbox bg-slate-700 border-slate-600 rounded text-orange-500 focus:ring-orange-500"/>
+                                    <span className="text-xs text-slate-300">Activar</span>
                                 </label>
                             )}
                         </div>
@@ -202,8 +202,8 @@ export const EffectCard: React.FC<EffectCardProps> = ({ effect, onAdd, canAdd })
                 </div>
             )}
 
-            <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-300/50">
-                <span className={`text-sm font-bold ${isDisadvantage ? 'text-emerald-700' : 'text-violet-700'}`}>
+            <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-700/50">
+                <span className={`text-sm font-bold ${isDisadvantage ? 'text-emerald-400' : 'text-orange-400'}`}>
                     Coste Total: {totalCost} PC
                 </span>
                 <button
@@ -211,8 +211,8 @@ export const EffectCard: React.FC<EffectCardProps> = ({ effect, onAdd, canAdd })
                     disabled={isAddDisabled}
                     className={`flex items-center gap-1 text-xs font-bold py-1 px-2 rounded-md transition-colors duration-200 ${
                         isDisadvantage 
-                        ? 'bg-emerald-500 hover:bg-emerald-600 text-white disabled:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed' 
-                        : 'bg-violet-500 hover:bg-violet-600 text-white disabled:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed'
+                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white disabled:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed' 
+                        : 'bg-orange-500 hover:bg-orange-600 text-white disabled:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed'
                     }`}
                 >
                     <PlusIcon /> Añadir

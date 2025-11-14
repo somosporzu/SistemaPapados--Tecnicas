@@ -59,4 +59,5 @@ export interface Technique {
   level: PowerLevel | null;
   force: Force | null;
   effects: EffectInstance[];
+  resistanceCost: number;
 }

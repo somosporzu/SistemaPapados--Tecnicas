@@ -13,7 +13,7 @@ export const FORCES: Record<Force, { description: string, color: string }> = {
     [Force.CONSERVATION]: { description: "La senda del cuidado y la preservación. Curación y defensas.", color: "emerald" },
     [Force.TRANSFORMATION]: { description: "La senda del cambio constante. Control elemental y del entorno.", color: "amber" },
     [Force.CREATION]: { description: "La senda de dar forma a lo nuevo. Invocaciones e ilusiones.", color: "sky" },
-    [Force.ORDER]: { description: "La senda del equilibrio y la estructura. Control y sellos.", color: "slate" },
+    [Force.ORDER]: { description: "La senda del equilibrio y la estructura. Control y sellos.", color: "zinc" },
     [Force.CHAOS]: { description: "La senda de lo indomable y contradictorio. Efectos aleatorios y daño persistente.", color: "violet" }
 };
 
@@ -23,6 +23,7 @@ export const initialTechniqueState: Technique = {
   level: null,
   force: null,
   effects: [],
+  resistanceCost: 0,
 };
 
 export const EFFECT_CATEGORIES = [

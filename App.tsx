@@ -20,11 +20,6 @@ function App() {
     return POWER_LEVELS[technique.level].pcBudget;
   }, [technique.level]);
 
-  const resistanceCost = useMemo(() => {
-    if (!technique.level) return 0;
-    return POWER_LEVELS[technique.level].resistanceCost;
-  }, [technique.level]);
-
   const totalPcCost = useMemo(() => {
     return technique.effects.reduce((sum, effectInstance) => sum + effectInstance.finalCost, 0);
   }, [technique.effects]);
@@ -34,7 +29,13 @@ function App() {
   };
 
   const handleSetLevel = (level: PowerLevel) => {
-    setTechnique(prev => ({ ...prev, level, effects: [] })); // Reset effects when level changes
+    const baseResistanceCost = POWER_LEVELS[level].resistanceCost;
+    setTechnique(prev => ({ 
+      ...prev, 
+      level, 
+      effects: [], 
+      resistanceCost: baseResistanceCost 
+    }));
   };
 
   const handleSetForce = (force: Force) => {
@@ -102,7 +103,7 @@ function App() {
 
 Nivel: ${technique.level}
 Fuerza: ${technique.force || 'Ninguna'}
-Coste de Resistencia: ${resistanceCost}
+Coste de Resistencia: ${technique.resistanceCost}
 
 PC Gastados: ${totalPcCost} / ${pcBudget}
 
@@ -132,6 +133,10 @@ ${effectLines || 'Ningún efecto añadido.'}
     
     setExportButtonText('Exportando...');
 
+    // When exporting, temporarily change background to dark slate for the image
+    const originalBg = techniqueCardRef.current.style.backgroundColor;
+    techniqueCardRef.current.style.backgroundColor = '#1e293b'; // slate-800
+
     htmlToImage.toPng(techniqueCardRef.current, { cacheBust: true, pixelRatio: 2 })
       .then((dataUrl: string) => {
         const link = document.createElement('a');
@@ -145,17 +150,22 @@ ${effectLines || 'Ningún efecto añadido.'}
         console.error('Error al exportar imagen:', err);
         setExportButtonText('Error');
         setTimeout(() => setExportButtonText('Exportar como Imagen'), 2000);
+      })
+      .finally(() => {
+          if (techniqueCardRef.current) {
+            techniqueCardRef.current.style.backgroundColor = originalBg;
+          }
       });
   };
 
   return (
-    <div className="min-h-screen text-slate-800 font-sans p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen text-slate-200 font-sans p-4 sm:p-6 lg:p-8">
       <div className="container mx-auto">
         <header className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-violet-800 tracking-tight">
+          <h1 className="text-4xl md:text-5xl font-bold text-orange-500 tracking-tight">
             Creador de Técnicas RPG
           </h1>
-          <p className="text-slate-600 mt-2 max-w-2xl mx-auto">
+          <p className="text-slate-400 mt-2 max-w-2xl mx-auto">
             Sigue los pasos para diseñar una técnica equilibrada para tu juego de rol, basada en el sistema de Puntos de Creación.
           </p>
         </header>
@@ -179,7 +189,6 @@ ${effectLines || 'Ningún efecto añadido.'}
                 <TechniqueCard 
                   ref={techniqueCardRef}
                   technique={technique} 
-                  resistanceCost={resistanceCost}
                   totalPcCost={totalPcCost}
                   pcBudget={pcBudget}
                   removeEffect={handleRemoveEffect}
@@ -188,14 +197,14 @@ ${effectLines || 'Ningún efecto añadido.'}
                     <button
                         onClick={handleExportImage}
                         disabled={!technique.level || exportButtonText !== 'Exportar como Imagen'}
-                        className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {exportButtonText}
                     </button>
                     <button
                         onClick={handleCopy}
                         disabled={!technique.level}
-                        className="w-full bg-violet-500 hover:bg-violet-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {copyButtonText}
                     </button>
