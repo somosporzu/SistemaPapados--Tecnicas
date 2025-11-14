@@ -17,7 +17,10 @@ export const FORCES: Record<Force, { description: string, color: string }> = {
     [Force.CHAOS]: { description: "La senda de lo indomable y contradictorio. Efectos aleatorios y daño persistente.", color: "violet" }
 };
 
+// Fix: Add placeholder id and parentId to conform to the updated Technique interface.
 export const initialTechniqueState: Technique = {
+  id: 'new-technique-placeholder',
+  parentId: null,
   name: '',
   description: '',
   level: null,
@@ -255,6 +258,44 @@ export const EFFECTS: Effect[] = [
                 { name: '+1 ataque', cost: 3 }, { name: '+2 ataques', cost: 6 }, { name: '+3 ataques', cost: 9 }, { name: '+4 ataques', cost: 12 }
             ]},
             DURATION_PER_TURN_OPTION(3)
+        ]
+    },
+    {
+        id: "of_dano_continuo",
+        category: "Efectos ofensivos",
+        name: "Daño Continuo",
+        description: "Inflige daño por ronda durante un tiempo determinado. El tipo de daño y la duración son personalizables.",
+        baseCost: 0,
+        restrictions: [Force.CONSERVATION, Force.CREATION],
+        options: [
+            {
+                id: 'damage_amount',
+                name: 'Daño por Ronda',
+                type: 'select',
+                values: [
+                    { name: '1 Daño', cost: 3 },
+                    { name: '3 Daño', cost: 5 },
+                    { name: '6 Daño', cost: 10 },
+                    { name: '9 Daño', cost: 15 },
+                ]
+            },
+            {
+                id: 'dot_duration',
+                name: 'Duración',
+                type: 'select',
+                values: [
+                    { name: 'Una ronda', cost: 0 },
+                    { name: 'Tres rondas', cost: 3 },
+                    { name: 'Cinco rondas', cost: 6 },
+                ]
+            },
+            {
+                id: 'different_damage_type',
+                name: 'Tipo de daño diferente (+3 PC)',
+                description: 'Restringido a fuerzas: Conservación, Orden.',
+                type: 'boolean',
+                cost: 3
+            }
         ]
     },
 

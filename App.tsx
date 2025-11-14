@@ -32,7 +32,7 @@ function App() {
     setTechnique(prev => ({ 
       ...prev, 
       level, 
-      effects: [], // Reset effects when level changes
+      // Keep existing effects when level changes for better UX
       resistanceCost: baseResistanceCost 
     }));
   };

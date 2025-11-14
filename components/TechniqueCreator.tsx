@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 // Fix: Import PowerLevel and Force as values, not just types, because they are enums used at runtime.
 import { type Technique, PowerLevel, Force, type Effect, type SelectedEffectOption } from '../types';
 import { FORCES, POWER_LEVELS, EFFECT_CATEGORIES, EFFECTS } from '../constants';
@@ -37,6 +37,23 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
   totalPcCost,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>(EFFECT_CATEGORIES[0]);
+  const effectsSectionRef = useRef<HTMLDivElement>(null);
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    // Don't scroll on the initial render, only on subsequent level changes.
+    if (isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
+    }
+
+    if (technique.level && effectsSectionRef.current) {
+        effectsSectionRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+        });
+    }
+  }, [technique.level]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -124,7 +141,7 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
       </div>
 
       {/* Step 3: Effects */}
-       <div className="bg-slate-800/60 backdrop-blur-sm p-6 rounded-lg border border-slate-700">
+       <div ref={effectsSectionRef} className="bg-slate-800/60 backdrop-blur-sm p-6 rounded-lg border border-slate-700">
          <h2 className="text-2xl font-bold text-orange-500 mb-4 border-b-2 border-orange-500/20 pb-2">Paso 2: Compra de Efectos</h2>
           {!technique.level && <p className="text-slate-400 text-center p-4 bg-slate-700/50 rounded-md">Por favor, selecciona un Nivel de Poder para ver los efectos disponibles.</p>}
           {technique.level && (
