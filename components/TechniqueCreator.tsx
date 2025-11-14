@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-// Fix: Import PowerLevel and Force as values, not just types, because they are enums used at runtime.
 import { type Technique, PowerLevel, Force, type Effect, type SelectedEffectOption } from '../types';
 import { FORCES, POWER_LEVELS, EFFECT_CATEGORIES, EFFECTS } from '../constants';
 import { EffectCard } from './EffectCard';
@@ -27,6 +26,13 @@ const ProgressBar: React.FC<{ value: number; max: number }> = ({ value, max }) =
     );
 };
 
+const ChevronDownIcon: React.FC<{ open: boolean }> = ({ open }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+    </svg>
+);
+
+
 const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
   technique,
   setTechnique,
@@ -36,7 +42,7 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
   pcBudget,
   totalPcCost,
 }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>(EFFECT_CATEGORIES[0]);
+  const [openCategories, setOpenCategories] = useState<Set<string>>(new Set([EFFECT_CATEGORIES[0]]));
   const effectsSectionRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
 
@@ -75,6 +81,18 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
       // Allow adding effects as long as a power level is selected.
       // The UI will warn the user if they go over budget, but won't block them.
       return !!technique.level;
+  };
+  
+  const toggleCategory = (category: string) => {
+    setOpenCategories(prev => {
+        const newSet = new Set(prev);
+        if (newSet.has(category)) {
+            newSet.delete(category);
+        } else {
+            newSet.add(category);
+        }
+        return newSet;
+    });
   };
 
   return (
@@ -161,34 +179,33 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
                   )}
               </div>
 
-              <div>
-                <div className="flex flex-wrap gap-2 border-b border-slate-700 pb-3 mb-3">
+              <div className="space-y-2">
                   {EFFECT_CATEGORIES.map(category => (
-                    <button
-                      key={category}
-                      onClick={() => setSelectedCategory(category)}
-                      className={`px-3 py-1.5 text-sm font-semibold rounded-md transition-colors duration-200 ${
-                        selectedCategory === category
-                          ? 'bg-orange-500 text-white shadow'
-                          : 'bg-slate-700 text-slate-200 hover:bg-slate-600'
-                      }`}
-                    >
-                      {category}
-                    </button>
+                    <div key={category} className="bg-slate-900/30 rounded-lg">
+                      <button
+                        onClick={() => toggleCategory(category)}
+                        className="w-full flex justify-between items-center text-left p-3 bg-slate-700/50 hover:bg-slate-700 transition-colors rounded-t-lg"
+                      >
+                        <h3 className="font-bold text-slate-200">{category}</h3>
+                        <ChevronDownIcon open={openCategories.has(category)} />
+                      </button>
+                      {openCategories.has(category) && (
+                        <div className="p-4">
+                           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                           {EFFECTS.filter(e => e.category === category && isEffectCompatible(e)).map(effect => (
+                             <EffectCard 
+                               key={effect.id}
+                               effect={effect}
+                               onAdd={addEffect}
+                               canAdd={canAddEffect}
+                             />
+                           ))}
+                         </div>
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
-
-                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                   {EFFECTS.filter(e => e.category === selectedCategory && isEffectCompatible(e)).map(effect => (
-                     <EffectCard 
-                       key={effect.id}
-                       effect={effect}
-                       onAdd={addEffect}
-                       canAdd={canAddEffect}
-                     />
-                   ))}
-                 </div>
-              </div>
             </div>
           )}
        </div>

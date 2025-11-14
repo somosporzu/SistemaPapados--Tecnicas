@@ -1,4 +1,3 @@
-// Fix: Import PowerLevel and Force as values, not just types, because they are enums used at runtime.
 import { PowerLevel, Force, type Effect, type Technique, type EffectOption } from './types';
 
 export const POWER_LEVELS: Record<PowerLevel, { resistanceCost: number, pcBudget: number }> = {
@@ -17,9 +16,9 @@ export const FORCES: Record<Force, { description: string, color: string }> = {
     [Force.CHAOS]: { description: "La senda de lo indomable y contradictorio. Efectos aleatorios y daño persistente.", color: "violet" }
 };
 
-// Fix: Add placeholder id and parentId to conform to the updated Technique interface.
 export const initialTechniqueState: Technique = {
-  id: 'new-technique-placeholder',
+  // FIX: Added id and parentId to match the updated Technique interface.
+  id: '',
   parentId: null,
   name: '',
   description: '',
