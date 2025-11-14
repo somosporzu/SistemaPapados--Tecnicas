@@ -4,7 +4,7 @@ import type { Effect, EffectOption, SelectedEffectOption } from '../types';
 interface EffectCardProps {
     effect: Effect;
     onAdd: (effect: Effect, selectedOptions: SelectedEffectOption[]) => void;
-    canAdd: (baseCost: number, optionsCost: number) => boolean;
+    canAdd: () => boolean;
 }
 
 const PlusIcon: React.FC = () => (
@@ -72,10 +72,9 @@ export const EffectCard: React.FC<EffectCardProps> = ({ effect, onAdd, canAdd })
         });
     };
 
-    const { optionsCost, totalCost } = useMemo(() => {
+    const { totalCost } = useMemo(() => {
         const optionsCost = selectedOptions.reduce((sum, opt) => sum + opt.cost, 0);
         return { 
-            optionsCost,
             totalCost: effect.baseCost + optionsCost 
         };
     }, [effect.baseCost, selectedOptions]);
@@ -142,7 +141,7 @@ export const EffectCard: React.FC<EffectCardProps> = ({ effect, onAdd, canAdd })
                 id: extraOptionId,
                 name: `Estado Adicional ${index + 1}`,
                 type: 'select',
-                values: availableStates.map(s => ({name: s.name, cost: 0}))
+                values: availableStates // FIX: Use the full value object with correct costs
             };
 
             return (
@@ -155,7 +154,7 @@ export const EffectCard: React.FC<EffectCardProps> = ({ effect, onAdd, canAdd })
                         className="w-full text-xs bg-slate-800 border border-slate-600 rounded-md py-1 px-2 text-slate-200 focus:ring-orange-500 focus:border-orange-500 transition"
                     >
                         <option value="">Selecciona un estado...</option>
-                        {extraStateOption.values?.map(v => <option key={v.name} value={v.name}>{v.name}</option>)}
+                        {extraStateOption.values?.map(v => <option key={v.name} value={v.name}>{v.name} ({v.cost >= 0 ? '+' : ''}{v.cost} PC)</option>)}
                     </select>
                 </div>
             )
@@ -163,7 +162,7 @@ export const EffectCard: React.FC<EffectCardProps> = ({ effect, onAdd, canAdd })
     }
     // --- End special logic ---
 
-    const isAddDisabled = !canAdd(effect.baseCost, optionsCost);
+    const isAddDisabled = !canAdd();
     const isDisadvantage = effect.category === "Desventajas";
 
     return (

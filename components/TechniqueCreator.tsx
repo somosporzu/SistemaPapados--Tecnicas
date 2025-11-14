@@ -10,7 +10,6 @@ interface TechniqueCreatorProps {
   setLevel: (level: PowerLevel) => void;
   setForce: (force: Force) => void;
   addEffect: (effect: Effect, selectedOptions: SelectedEffectOption[]) => void;
-  removeEffect: (instanceId: string) => void;
   pcBudget: number;
   totalPcCost: number;
 }
@@ -55,13 +54,10 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
       return !effect.restrictions.includes(technique.force);
   };
   
-  const canAddEffect = (baseCost: number, optionsCost: number): boolean => {
-      if (!technique.level) return false;
-      const totalEffectCost = baseCost + optionsCost;
-      const isSecondary = technique.effects.length > 0;
-      const secondaryCost = isSecondary && totalEffectCost > 0 ? 2 : 0;
-      const totalCostToAdd = totalEffectCost + secondaryCost;
-      return totalPcCost + totalCostToAdd <= pcBudget;
+  const canAddEffect = (): boolean => {
+      // Allow adding effects as long as a power level is selected.
+      // The UI will warn the user if they go over budget, but won't block them.
+      return !!technique.level;
   };
 
   return (

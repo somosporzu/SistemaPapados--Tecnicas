@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
 import type { Technique, EffectInstance, PowerLevel, Force, Effect, SelectedEffectOption } from './types';
 import { POWER_LEVELS } from './constants';
 import TechniqueCreator from './components/TechniqueCreator';
@@ -13,7 +13,6 @@ function App() {
   const [copyButtonText, setCopyButtonText] = useState('Copiar como Texto');
   const [exportButtonText, setExportButtonText] = useState('Exportar como Imagen');
   const techniqueCardRef = useRef<HTMLDivElement>(null);
-
 
   const pcBudget = useMemo(() => {
     if (!technique.level) return 0;
@@ -33,7 +32,7 @@ function App() {
     setTechnique(prev => ({ 
       ...prev, 
       level, 
-      effects: [], 
+      effects: [], // Reset effects when level changes
       resistanceCost: baseResistanceCost 
     }));
   };
@@ -133,7 +132,6 @@ ${effectLines || 'Ningún efecto añadido.'}
     
     setExportButtonText('Exportando...');
 
-    // When exporting, temporarily change background to dark slate for the image
     const originalBg = techniqueCardRef.current.style.backgroundColor;
     techniqueCardRef.current.style.backgroundColor = '#1e293b'; // slate-800
 
@@ -166,7 +164,7 @@ ${effectLines || 'Ningún efecto añadido.'}
             Creador de Técnicas RPG
           </h1>
           <p className="text-slate-400 mt-2 max-w-2xl mx-auto">
-            Sigue los pasos para diseñar una técnica equilibrada para tu juego de rol, basada en el sistema de Puntos de Creación.
+            Diseña y equilibra técnicas para tu juego de rol siguiendo unos sencillos pasos.
           </p>
         </header>
 
@@ -178,12 +176,10 @@ ${effectLines || 'Ningún efecto añadido.'}
               setLevel={handleSetLevel}
               setForce={handleSetForce}
               addEffect={handleAddEffect}
-              removeEffect={handleRemoveEffect}
               pcBudget={pcBudget}
               totalPcCost={totalPcCost}
             />
           </div>
-
           <div className="lg:col-span-1">
              <div className="sticky top-8">
                 <TechniqueCard 

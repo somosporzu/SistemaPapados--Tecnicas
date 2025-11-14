@@ -54,6 +54,9 @@ export interface EffectInstance {
 }
 
 export interface Technique {
+  // Fix: Add 'id' and 'parentId' to support relationships between techniques in the tree view.
+  id: string;
+  parentId?: string;
   name: string;
   description: string;
   level: PowerLevel | null;

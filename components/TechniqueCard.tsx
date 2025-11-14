@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import type { Technique, EffectInstance } from '../types';
+import type { Technique } from '../types';
 import { FORCES } from '../constants';
 
 interface TechniqueCardProps {
@@ -28,11 +28,12 @@ const RemoveIcon: React.FC = () => (
     </svg>
 );
 
-
 const TechniqueCard = forwardRef<HTMLDivElement, TechniqueCardProps>(({ technique, totalPcCost, pcBudget, removeEffect }, ref) => {
   return (
     <div ref={ref} className="bg-slate-800/60 backdrop-blur-sm border border-slate-700 rounded-lg p-6 shadow-lg space-y-4">
-      <h3 className="text-2xl font-bold text-center text-slate-200 border-b-2 border-slate-700 pb-3">Técnica Resultante</h3>
+      <div className="flex justify-between items-center border-b-2 border-slate-700 pb-3">
+        <h3 className="text-2xl font-bold text-center text-slate-200">Técnica Resultante</h3>
+      </div>
       
       <div>
         <h4 className="font-bold text-lg text-orange-500">{technique.name || "Nombre de la Técnica"}</h4>
