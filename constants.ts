@@ -17,9 +17,6 @@ export const FORCES: Record<Force, { description: string, color: string }> = {
 };
 
 export const initialTechniqueState: Technique = {
-  // FIX: Added id and parentId to match the updated Technique interface.
-  id: '',
-  parentId: null,
   name: '',
   description: '',
   level: null,

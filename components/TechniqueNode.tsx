@@ -19,14 +19,20 @@ const TechniqueNode: React.FC<NodeProps<Technique & { onDelete: (id: string) => 
     const totalPcCost = data.effects.reduce((sum, effectInstance) => sum + effectInstance.finalCost, 0);
     const pcBudget = data.level ? POWER_LEVELS[data.level].pcBudget : 0;
     
+    // FIX: Add a check for data.id before calling onDelete to handle the optional 'id' property.
     const handleDelete = (e: React.MouseEvent) => {
         e.stopPropagation();
-        data.onDelete(data.id);
+        if (data.id) {
+            data.onDelete(data.id);
+        }
     };
     
+    // FIX: Add a check for data.id before calling onEdit to handle the optional 'id' property.
     const handleEdit = (e: React.MouseEvent) => {
         e.stopPropagation();
-        data.onEdit(data.id);
+        if (data.id) {
+            data.onEdit(data.id);
+        }
     };
 
     return (

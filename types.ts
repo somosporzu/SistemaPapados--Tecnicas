@@ -54,9 +54,9 @@ export interface EffectInstance {
 }
 
 export interface Technique {
-  // FIX: Added id and parentId to support the tree view functionality.
-  id: string;
-  parentId?: string | null;
+  // FIX: Add optional id and parentId for tree view functionality.
+  id?: string;
+  parentId?: string;
   name: string;
   description: string;
   level: PowerLevel | null;

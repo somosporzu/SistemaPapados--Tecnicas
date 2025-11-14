@@ -26,8 +26,10 @@ const nodeTypes = {
 
 // Simple auto-layout logic
 const getLayoutedElements = (techniques: Technique[]) => {
-    const nodes = techniques.map((tech, i) => ({
-        id: tech.id,
+    // FIX: Filter techniques to ensure they have an ID before creating nodes.
+    // This prevents errors with ReactFlow, which requires a string ID for each node.
+    const nodes = techniques.filter(tech => tech.id).map((tech, i) => ({
+        id: tech.id!,
         type: 'technique',
         position: { x: (i % 4) * 300, y: Math.floor(i / 4) * 200 },
         // FIX: The placeholder functions for onDelete and onEdit now accept an `id` parameter
@@ -36,12 +38,13 @@ const getLayoutedElements = (techniques: Technique[]) => {
         data: { ...tech, onDelete: (id: string) => {}, onEdit: (id: string) => {} },
     }));
 
+    // FIX: Filter techniques to ensure they have both a parentId and an id before creating edges.
     const edges = techniques
-        .filter(tech => tech.parentId)
+        .filter(tech => tech.parentId && tech.id)
         .map(tech => ({
-            id: `e-${tech.parentId}-${tech.id}`,
+            id: `e-${tech.parentId!}-${tech.id!}`,
             source: tech.parentId!,
-            target: tech.id,
+            target: tech.id!,
             animated: true,
             style: { stroke: '#f97316' },
         }));
