@@ -33,6 +33,7 @@ export const EFFECT_CATEGORIES = [
     "Efectos de penalización",
     "Convocatoria",
     "Efectos Varios",
+    "Efectos de Dominio",
     "Desventajas"
 ];
 
@@ -261,7 +262,7 @@ export const EFFECTS: Effect[] = [
         category: "Efectos ofensivos",
         name: "Daño Continuo",
         description: "Inflige daño por ronda durante un tiempo determinado. El tipo de daño y la duración son personalizables.",
-        baseCost: 0,
+        baseCost: 0, 
         restrictions: [Force.CONSERVATION, Force.CREATION],
         options: [
             {
@@ -316,7 +317,7 @@ export const EFFECTS: Effect[] = [
         category: "Efectos defensivos",
         name: "Contrataque",
         description: "Permite realizar un ataque al ser atacado. Opcionalmente, reemplaza su daño con el daño recibido.",
-        baseCost: 0,
+        baseCost: 0, 
         restrictions: [],
         options: [
             {
@@ -356,6 +357,26 @@ export const EFFECTS: Effect[] = [
             DURATION_OPTION
         ] 
     },
+    {
+        id: "def_resistencia_tipo",
+        category: "Efectos defensivos",
+        name: "Resistencia a Daño",
+        description: "Otorga resistencia o inmunidad contra un tipo específico de daño (fuego, corte, contundente, etc.).",
+        baseCost: 0,
+        restrictions: [Force.DESTRUCTION],
+        options: [
+            {
+                id: 'protection_level',
+                name: 'Nivel de Protección',
+                type: 'select',
+                values: [
+                    { name: 'Resistencia (Mitad de daño)', cost: 5 },
+                    { name: 'Inmunidad (Anula el daño)', cost: 12 },
+                ]
+            },
+            DURATION_OPTION
+        ]
+    },
 
     // 3. Efectos de Movimiento
     { 
@@ -391,7 +412,7 @@ export const EFFECTS: Effect[] = [
         category: "Efectos de Movimiento",
         name: "Movimiento Especial",
         description: "Gana un tipo de movimiento especial por una duración determinada. Las restricciones de Fuerza se aplican a tipos específicos.",
-        baseCost: 0,
+        baseCost: 0, 
         restrictions: [],
         options: [
             {
@@ -479,7 +500,7 @@ export const EFFECTS: Effect[] = [
         category: "Efectos de Apoyo",
         name: "Absorción de Resistencia",
         description: "Recuperas Resistencia igual a una porción del daño infligido.",
-        baseCost: 0,
+        baseCost: 0, 
         restrictions: [],
         options: [
             {
@@ -545,7 +566,7 @@ export const EFFECTS: Effect[] = [
         category: "Efectos de penalización",
         name: "Imponer Estado Alterado",
         description: "Impone una condición negativa al objetivo, que puede requerir una salvación para ser evitada.",
-        baseCost: 0,
+        baseCost: 0, 
         restrictions: [],
         options: [
             {
@@ -711,7 +732,7 @@ export const EFFECTS: Effect[] = [
         category: "Efectos Varios",
         name: "Ilusión",
         description: "Crea una ilusión que afecta uno o más sentidos. Puede tener una salvación para ser desacreditada.",
-        baseCost: 0,
+        baseCost: 0, 
         restrictions: [],
         options: [
             {
@@ -757,7 +778,7 @@ export const EFFECTS: Effect[] = [
         category: "Efectos Varios",
         name: "Uso Indirecto",
         description: "La técnica se origina desde otro elemento (nube, espinas del suelo, etc), no desde el usuario. El coste depende del nivel de la técnica.",
-        baseCost: 0,
+        baseCost: 0, 
         restrictions: [Force.TRANSFORMATION],
         options: [
              {
@@ -778,7 +799,7 @@ export const EFFECTS: Effect[] = [
         category: "Efectos Varios",
         name: "Acción Adicional",
         description: "Gana acciones adicionales este turno. Algunas opciones tienen restricciones de Fuerza.",
-        baseCost: 0,
+        baseCost: 0, 
         restrictions: [],
         options: [
              {
@@ -794,9 +815,217 @@ export const EFFECTS: Effect[] = [
             }
         ]
     },
+    {
+        id: "var_comunicacion_mental",
+        category: "Efectos Varios",
+        name: "Comunicación Mental",
+        description: "Establece un vínculo telepático con uno o más objetivos para comunicarte en silencio.",
+        baseCost: 0,
+        restrictions: [],
+        options: [
+            {
+                id: 'telepathy_range',
+                name: 'Alcance',
+                type: 'select',
+                values: [
+                    { name: '10 metros', cost: 2 },
+                    { name: '100 metros', cost: 4 },
+                    { name: '1 kilómetro', cost: 6 },
+                    { name: 'Cualquier lugar (mismo plano)', cost: 10 },
+                ]
+            },
+            {
+                id: 'telepathy_targets',
+                name: 'Objetivos',
+                type: 'select',
+                values: [
+                    { name: 'Un objetivo', cost: 0 },
+                    { name: 'Hasta 3 objetivos', cost: 3 },
+                    { name: 'Hasta 5 objetivos', cost: 5 },
+                ]
+            },
+            {
+                id: 'telepathy_duration',
+                name: 'Duración',
+                type: 'select',
+                values: [
+                    { name: '1 minuto', cost: 0 },
+                    { name: '10 minutos', cost: 2 },
+                    { name: '1 hora', cost: 4 },
+                ]
+            },
+            {
+                id: 'two_way_comm',
+                name: 'Comunicación Bidireccional (+3 PC)',
+                description: 'El objetivo también puede responder telepáticamente.',
+                type: 'boolean',
+                cost: 3,
+            }
+        ]
+    },
+    {
+        id: "var_perspicacia",
+        category: "Efectos Varios",
+        name: "Perspicacia Sobrenatural",
+        description: "Obtienes una ventaja en situaciones sociales o de investigación, pudiendo leer intenciones o encontrar pistas ocultas.",
+        baseCost: 0,
+        restrictions: [Force.DESTRUCTION, Force.CHAOS],
+        options: [
+            {
+                id: 'insight_type',
+                name: 'Tipo de Perspicacia',
+                type: 'select',
+                values: [
+                    { name: 'Bono +3 a tiradas sociales', cost: 3 },
+                    { name: 'Bono +3 a tiradas de investigación', cost: 3 },
+                    { name: 'Bono +5 a tiradas sociales', cost: 6 },
+                    { name: 'Bono +5 a tiradas de investigación', cost: 6 },
+                ]
+            },
+            {
+                id: 'detect_lies',
+                name: 'Detectar Mentiras Automáticamente (+8 PC)',
+                description: 'Sabes instintivamente si alguien te está mintiendo directamente. Restricción: Orden.',
+                type: 'boolean',
+                cost: 8,
+            },
+            {
+                id: 'read_surface_thoughts',
+                name: 'Leer Pensamientos Superficiales (+10 PC)',
+                description: 'Puedes escuchar los pensamientos activos y superficiales de un objetivo. Requiere concentración. Restricción: Orden, Creación.',
+                type: 'boolean',
+                cost: 10,
+            }
+        ]
+    },
+    {
+        id: "var_creacion_menor",
+        category: "Efectos Varios",
+        name: "Creación Menor",
+        description: "Crea un objeto pequeño y no mágico a partir de la nada o de materiales simples.",
+        baseCost: 0,
+        restrictions: [Force.DESTRUCTION, Force.CONSERVATION, Force.ORDER, Force.CHAOS],
+        options: [
+            {
+                id: 'creation_complexity',
+                name: 'Complejidad del Objeto',
+                type: 'select',
+                values: [
+                    { name: 'Objeto simple y pequeño (llave, taza)', cost: 2 },
+                    { name: 'Herramienta simple (martillo, palanca)', cost: 4 },
+                    { name: 'Objeto con partes móviles simples (polea)', cost: 6 },
+                ]
+            },
+            {
+                id: 'creation_duration',
+                name: 'Duración del Objeto',
+                type: 'select',
+                values: [
+                    { name: '10 minutos', cost: 0 },
+                    { name: '1 hora', cost: 2 },
+                    { name: 'Permanente (pero frágil)', cost: 5 },
+                    { name: 'Permanente y duradero', cost: 8 },
+                ]
+            }
+        ]
+    },
+    {
+        id: "var_sentidos_agudizados",
+        category: "Efectos Varios",
+        name: "Sentidos Agudizados",
+        description: "Mejora uno de tus sentidos más allá de los límites normales, otorgando nuevas formas de percepción.",
+        baseCost: 0,
+        restrictions: [],
+        options: [
+            {
+                id: 'sense_type',
+                name: 'Sentido Mejorado',
+                type: 'select',
+                values: [
+                    { name: 'Visión en la oscuridad (20m)', cost: 3 },
+                    { name: 'Oído agudo (doble distancia)', cost: 2 },
+                    { name: 'Olfato agudo (rastrear por olor)', cost: 4 },
+                    { name: 'Visión telescópica (ver x5 más lejos)', cost: 3 },
+                    { name: 'Percepción sísmica (sentir vibraciones 10m)', cost: 5 },
+                ]
+            },
+            DURATION_OPTION
+        ]
+    },
+
+
+    // 8. Efectos de Dominio
+    {
+        id: "dom_terreno",
+        category: "Efectos de Dominio",
+        name: "Dominio del Terreno",
+        description: "Transforma o controla el terreno físico en un área determinada.",
+        baseCost: 0,
+        restrictions: [],
+        options: [
+             {
+                id: 'terrain_effect',
+                name: 'Efecto de Terreno',
+                type: 'select',
+                values: [
+                    { name: 'Terreno Difícil (Mitad movimiento)', cost: 3 },
+                    { name: 'Terreno Peligroso (Daño al entrar/empezar)', cost: 6 },
+                    { name: 'Terreno Intransitable (Muros/Foso)', cost: 10 },
+                ]
+            },
+            {
+                id: 'terrain_area',
+                name: 'Área Afectada',
+                type: 'select',
+                values: [
+                    { name: 'Radio 5m', cost: 3 },
+                    { name: 'Radio 10m', cost: 6 },
+                    { name: 'Radio 20m', cost: 9 },
+                ]
+            },
+            DURATION_OPTION
+        ]
+    },
+    {
+        id: "dom_presencia",
+        category: "Efectos de Dominio",
+        name: "Presencia Avasalladora",
+        description: "Tu mera presencia impone una carga mental sobre los objetivos.",
+        baseCost: 0,
+        restrictions: [],
+        options: [
+             {
+                id: 'presence_effect',
+                name: 'Efecto',
+                type: 'select',
+                values: [
+                    { name: 'Miedo (Desventaja en ataques)', cost: 5 },
+                    { name: 'Parálisis (Requiere salvación)', cost: 10 },
+                    { name: 'Sumisión (Obedecen órdenes simples)', cost: 15 },
+                ]
+            },
+            {
+                 id: 'presence_target',
+                 name: 'Objetivos',
+                 type: 'select',
+                 values: [
+                     { name: 'Un objetivo', cost: 0 },
+                     { name: 'Hasta 3 objetivos', cost: 5 },
+                     { name: 'Todos los enemigos en 10m', cost: 10 },
+                 ]
+            },
+            {
+                id: 'selective_presence',
+                name: 'Selectividad (+3 PC)',
+                type: 'boolean',
+                cost: 3
+            },
+            DURATION_OPTION
+        ]
+    },
     
 
-    // 8. Desventajas
+    // 9. Desventajas
     { 
         id: "des_agotamiento", 
         category: "Desventajas", 
@@ -815,7 +1044,7 @@ export const EFFECTS: Effect[] = [
         category: "Desventajas",
         name: "Desventaja: Atadura",
         description: "Requiere usar un objeto o arma para ejecutar la técnica. Restricción de Fuerza: Transformación.",
-        baseCost: 0,
+        baseCost: 0, 
         restrictions: [Force.TRANSFORMATION],
         options: [
             {

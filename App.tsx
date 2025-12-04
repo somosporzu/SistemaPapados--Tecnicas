@@ -47,9 +47,8 @@ function App() {
       const baseEffectCost = effect.baseCost + optionsCost;
       
       const isSecondary = prev.effects.length > 0;
-      // The secondary effect rule adds +2 PC
-      const secondaryCost = isSecondary && baseEffectCost > 0 ? 2 : 0;
-      const finalCost = baseEffectCost + secondaryCost;
+      // The secondary effect rule (+2 PC) is now removed.
+      const finalCost = baseEffectCost;
       
       const newEffectInstance: EffectInstance = {
         id: `${effect.id}-${Date.now()}`,
@@ -72,8 +71,8 @@ function App() {
 
             const optionsCost = instance.selectedOptions.reduce((sum, opt) => sum + opt.cost, 0);
             const baseEffectCost = instance.effect.baseCost + optionsCost;
-            const secondaryCost = isSecondary && baseEffectCost > 0 ? 2 : 0;
-            const finalCost = baseEffectCost + secondaryCost;
+            // The secondary effect rule (+2 PC) is now removed.
+            const finalCost = baseEffectCost;
             
             return {...instance, isSecondary, finalCost};
         });
