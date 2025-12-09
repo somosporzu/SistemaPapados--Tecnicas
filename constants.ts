@@ -3,8 +3,8 @@ import { PowerLevel, Force, type Effect, type Technique, type EffectOption } fro
 export const POWER_LEVELS: Record<PowerLevel, { resistanceCost: number, pcBudget: number }> = {
   [PowerLevel.SUPPORT]: { resistanceCost: 1, pcBudget: 5 },
   [PowerLevel.LEVEL_1]: { resistanceCost: 2, pcBudget: 10 },
-  [PowerLevel.LEVEL_2]: { resistanceCost: 4, pcBudget: 20 },
-  [PowerLevel.LEVEL_3]: { resistanceCost: 6, pcBudget: 30 },
+  [PowerLevel.LEVEL_2]: { resistanceCost: 4, pcBudget: 15 },
+  [PowerLevel.LEVEL_3]: { resistanceCost: 6, pcBudget: 20 },
 };
 
 export const FORCES: Record<Force, { description: string, color: string }> = {
