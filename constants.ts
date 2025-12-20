@@ -816,6 +816,27 @@ export const EFFECTS: Effect[] = [
         ]
     },
     {
+        id: "var_accion_rapida",
+        category: "Efectos Varios",
+        name: "Acción Rápida",
+        description: "Convierte la técnica de Acción Principal a Acción Rápida. El coste depende del nivel de la técnica.",
+        baseCost: 0,
+        restrictions: [],
+        options: [
+            {
+                id: 'quick_action_level',
+                name: 'Nivel de la técnica',
+                type: 'select',
+                values: [
+                    { name: 'Nivel Apoyo', cost: 2 },
+                    { name: 'Nivel 1', cost: 5 },
+                    { name: 'Nivel 2', cost: 7 },
+                    { name: 'Nivel 3', cost: 10 },
+                ]
+            }
+        ]
+    },
+    {
         id: "var_comunicacion_mental",
         category: "Efectos Varios",
         name: "Comunicación Mental",
