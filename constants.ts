@@ -4,7 +4,7 @@ export const POWER_LEVELS: Record<PowerLevel, { resistanceCost: number, pcBudget
   [PowerLevel.SUPPORT]: { resistanceCost: 1, pcBudget: 5 },
   [PowerLevel.LEVEL_1]: { resistanceCost: 2, pcBudget: 10 },
   [PowerLevel.LEVEL_2]: { resistanceCost: 4, pcBudget: 15 },
-  [PowerLevel.LEVEL_3]: { resistanceCost: 6, pcBudget: 20 },
+  [PowerLevel.LEVEL_3]: { resistanceCost: 6, pcBudget: 25 },
 };
 
 export const FORCES: Record<Force, { description: string, color: string }> = {
@@ -38,20 +38,6 @@ export const EFFECT_CATEGORIES = [
 ];
 
 // Reusable Effect Options
-const DURATION_OPTION: EffectOption = {
-    id: 'duration',
-    name: 'Duración',
-    type: 'select',
-    values: [
-        { name: 'Una ronda', cost: 0 },
-        { name: 'Tres rondas', cost: 1 },
-        { name: 'Cinco rondas', cost: 2 },
-        { name: '5 minutos', cost: 3 },
-        { name: '10 minutos', cost: 5 },
-        { name: '20 minutos', cost: 8 },
-    ]
-};
-
 const DURATION_PER_TURN_OPTION = (turnCost: number): EffectOption => ({
     id: 'extra_duration',
     name: `Mantener bono turnos extra`,
@@ -64,17 +50,6 @@ const DURATION_PER_TURN_OPTION = (turnCost: number): EffectOption => ({
     ]
 });
 
-const PEN_DEF_DURATION_OPTION: EffectOption = {
-    id: 'duration',
-    name: 'Duración',
-    type: 'select',
-    values: [
-        { name: 'Una ronda', cost: 0 },
-        { name: 'Tres rondas', cost: 3 },
-        { name: 'Cinco rondas', cost: 6 },
-    ]
-};
-
 const SACRIFICE_OPTION: EffectOption = {
     id: 'sacrifice',
     name: 'Sacrificio (+5 PC)',
@@ -83,64 +58,13 @@ const SACRIFICE_OPTION: EffectOption = {
     cost: 5,
 };
 
-const circumstanceDisadvantage: Omit<Effect, 'id' | 'name'> = {
-    category: "Desventajas",
-    description: "La técnica solo puede usarse bajo una condición especial. Restricción de Fuerza: Transformación.",
-    baseCost: 0,
-    restrictions: [Force.TRANSFORMATION],
-    options: [
-        {
-            id: 'circumstance_type',
-            name: 'Tipo de Circunstancia',
-            type: 'select',
-            values: [
-                { name: 'Mitad de resistencia máxima', cost: -5 },
-                { name: 'Bajo un estado alterado', cost: -3 },
-                { name: 'Con arma envainada (debe desenfundar)', cost: -3 },
-                { name: 'Volando', cost: -3 },
-                { name: 'Sobre una montura', cost: -3 },
-                { name: 'Debe ser de día', cost: -5 },
-                { name: 'Debe ser de noche', cost: -5 },
-                { name: 'En terreno determinado', cost: -5 },
-                { name: 'Contra un tipo de criatura específico', cost: -5 },
-            ]
-        }
-    ]
-};
-
-const penalizadorDisadvantage: Omit<Effect, 'id' | 'name'> = {
-    category: "Desventajas",
-    description: "Tras usar la técnica, el usuario sufre un efecto negativo.",
-    baseCost: 0,
-    restrictions: [],
-    options: [
-        {
-            id: 'penalty_type',
-            name: 'Tipo de Penalizador',
-            type: 'select',
-            values: [
-                { name: 'Penalizador a toda acción -1', cost: -2 },
-                { name: 'Penalizador a toda acción -3', cost: -4 },
-                { name: 'Penalizador a toda acción -5', cost: -6 },
-                { name: 'Sufre Estado Alterado', cost: -3 },
-                { name: 'Pérdida de sentido', cost: -5 },
-                { name: 'Defensa a la mitad', cost: -5 },
-                { name: 'Defensa igual a 0', cost: -8 },
-                { name: 'Sobrecarga menor (esperar 3 rondas)', cost: -3 },
-                { name: 'Sobrecarga mayor (esperar 5 rondas)', cost: -5 },
-            ]
-        }
-    ]
-};
-
-
 export const EFFECTS: Effect[] = [
     // 1. Efectos ofensivos
     { 
         id: "of_bono_ataque", 
         category: "Efectos ofensivos", 
         name: "Bono a la tirada de ataque", 
-        description: "Otorga un bono a la tirada de ataque. Los bonos altos tienen restricciones de Fuerza.", 
+        description: "Otorga un bono a la tirada de ataque.", 
         baseCost: 0, 
         restrictions: [Force.CONSERVATION, Force.CREATION, Force.ORDER], 
         options: [
@@ -156,7 +80,7 @@ export const EFFECTS: Effect[] = [
         id: "of_bono_dano", 
         category: "Efectos ofensivos", 
         name: "Bono al daño", 
-        description: "Añade un bono al daño de la técnica. Los bonos altos tienen restricciones de Fuerza.", 
+        description: "Añade un bono al daño de la técnica.", 
         baseCost: 0, 
         restrictions: [Force.CONSERVATION, Force.CREATION, Force.ORDER], 
         options: [
@@ -166,133 +90,114 @@ export const EFFECTS: Effect[] = [
             { id: 'all_attacks', name: 'A todos los ataques del turno (+5 PC)', type: 'boolean', cost: 5 },
             SACRIFICE_OPTION,
             DURATION_PER_TURN_OPTION(2),
-            { 
-                id: 'different_damage_type', 
-                name: 'Tipo de daño diferente (+3 PC)', 
-                description: 'Restringido a fuerzas: Conservación, Orden.', 
-                type: 'boolean', 
-                cost: 3 
-            }
+            { id: 'different_damage_type', name: 'Tipo de daño diferente (+3 PC)', type: 'boolean', cost: 3 }
         ] 
+    },
+    {
+        id: "of_multiplicador",
+        category: "Efectos ofensivos",
+        name: "Multiplicador de Daño",
+        description: "SECCIÓN ESPECIAL: Multiplica el daño base. No acumulable con Bonos al Daño.",
+        baseCost: 0,
+        restrictions: [Force.CONSERVATION, Force.CREATION, Force.ORDER],
+        options: [
+            { id: 'mult_select', name: 'Multiplicador', type: 'select', values: [
+                { name: 'x2', cost: 12 }, { name: 'x3', cost: 20 }, { name: 'x4 (Solo Nivel 3)', cost: 25 }
+            ]},
+            { id: 'all_attacks_mult', name: 'A todos los ataques del turno (+8 PC)', type: 'boolean', cost: 8 },
+            { id: 'mult_extra_duration', name: 'Mantener multiplicador turnos extra', type: 'select', values: [
+                { name: 'Duración base (1 turno)', cost: 0 }, { name: '+1 turno extra (+4 PC)', cost: 4 }, { name: '+2 turnos extra (+8 PC)', cost: 8 }
+            ]}
+        ]
+    },
+    {
+        id: "of_proyectil_magico",
+        category: "Efectos ofensivos",
+        name: "Proyectil Mágico",
+        description: "Ataque a distancia independiente del arma.",
+        baseCost: 0,
+        restrictions: [], // Required: Transformation, Creation, Chaos logic usually handled via concepts
+        options: [
+            { id: 'proj_damage', name: 'Daño del Proyectil', type: 'select', values: [
+                { name: '1d6-2', cost: 3 }, { name: '1d6-1', cost: 5 }, { name: '1d6', cost: 7 }, { name: '1d6+1', cost: 9 }, { name: '2d6-1', cost: 12 }, { name: '2d6', cost: 15 }, { name: '2d6+1', cost: 18 }
+            ]},
+            { id: 'proj_range', name: 'Alcance', type: 'select', values: [
+                { name: '10 metros', cost: 0 }, { name: '15 metros', cost: 2 }, { name: '20 metros', cost: 4 }, { name: '30 metros', cost: 6 }
+            ]},
+            { id: 'proj_targets', name: 'Objetivos Extras', type: 'select', values: [
+                { name: 'Ninguno', cost: 0 }, { name: '+1 objetivo', cost: 4 }, { name: '+2 objetivos', cost: 7 }, { name: '+3 objetivos', cost: 12 }
+            ]},
+            { id: 'no_lov', name: 'Sin línea de visión (+5 PC)', type: 'boolean', cost: 5 },
+            { id: 'proj_projection', name: 'Proyección (+3 PC)', type: 'boolean', cost: 3 }
+        ]
     },
     { 
         id: "of_distancia", 
         category: "Efectos ofensivos", 
-        name: "Ataque a distancia", 
-        description: "Permite que la técnica ataque a distancia. Incluye opciones para múltiples objetivos y efectos de trayectoria.", 
+        name: "Ataque a Distancia (Arma)", 
+        description: "Permite usar el arma a distancia.", 
         baseCost: 0, 
         restrictions: [], 
         options: [
-            { 
-                id: 'distancia_select', 
-                name: 'Distancia', 
-                type: 'select', 
-                values: [
-                    { name: '5 metros', cost: 2 }, { name: '10 metros', cost: 4 }, { name: '15 metros', cost: 6 }, { name: '20 metros', cost: 8 },
-                ]
-            },
-            {
-                id: 'extra_targets',
-                name: 'Objetivos extras',
-                type: 'select',
-                values: [
-                    { name: 'Ninguno', cost: 0 },
-                    { name: '+1 objetivo', cost: 4 },
-                    { name: '+2 objetivos', cost: 7 },
-                    { name: '+3 objetivos', cost: 12 },
-                ]
-            },
-            {
-                id: 'projection',
-                name: 'Proyección (+4 PC)',
-                description: 'El personaje se mueve hacia el objetivo la distancia de la técnica.',
-                type: 'boolean',
-                cost: 4
-            },
-            {
-                id: 'destruction_wake',
-                name: 'Estela de destrucción (+8 PC)',
-                description: 'Impacta a todos en línea recta hacia el objetivo.',
-                type: 'boolean',
-                cost: 8
-            }
+            { id: 'dist_select', name: 'Distancia', type: 'select', values: [
+                { name: '5 metros', cost: 2 }, { name: '10 metros', cost: 4 }, { name: '15 metros', cost: 6 }, { name: '20 metros', cost: 8 }
+            ]},
+            { id: 'dist_targets', name: 'Objetivos Extras', type: 'select', values: [
+                { name: 'Ninguno', cost: 0 }, { name: '+1 objetivo', cost: 4 }, { name: '+2 objetivos', cost: 7 }, { name: '+3 objetivos', cost: 12 }
+            ]},
+            { id: 'no_lov_weapon', name: 'Sin línea de visión (+6 PC)', type: 'boolean', cost: 6 },
+            { id: 'dist_projection', name: 'Proyección (+4 PC)', type: 'boolean', cost: 4 },
+            { id: 'destruction_wake', name: 'Estela de destrucción (+8 PC)', type: 'boolean', cost: 8 }
         ]
     },
     { 
         id: "of_area", 
         category: "Efectos ofensivos", 
         name: "Ataque de Área", 
-        description: "Afecta un área. Puede ser selectivo con ciertas Fuerzas.", 
+        description: "Afecta un área determinada.", 
         baseCost: 0, 
         restrictions: [], 
         options: [
-            { 
-                id: 'area_select', 
-                name: 'Radio del Área', 
-                type: 'select', 
-                values: [
-                    { name: '1 metro', cost: 2 }, { name: '5 metros', cost: 3 }, { name: '10 metros', cost: 5 }, { name: '15 metros', cost: 9 }, { name: '20 metros', cost: 15 },
-                ]
-            },
-            {
-                id: 'selective_targeting',
-                name: 'Elección de objetivos (+5 PC)',
-                description: 'Puedes elegir a quién golpear dentro del área. Restricción: Destrucción, Caos.',
-                type: 'boolean',
-                cost: 5
-            }
+            { id: 'area_radius', name: 'Radio del Área', type: 'select', values: [
+                { name: '1 metro', cost: 2 }, { name: '5 metros', cost: 3 }, { name: '10 metros', cost: 5 }, { name: '15 metros', cost: 9 }, { name: '20 metros', cost: 15 }
+            ]},
+            { id: 'area_shape', name: 'Forma del Área', type: 'select', values: [
+                { name: 'Círculo', cost: 0 }, { name: 'Cono', cost: -1 }, { name: 'Línea', cost: -2 }, { name: 'Cubo', cost: 2 }
+            ]},
+            { id: 'selective_area', name: 'Elección de objetivos (+5 PC)', type: 'boolean', cost: 5 }
         ]
     },
     { 
         id: "of_ataque_extra", 
         category: "Efectos ofensivos", 
         name: "Ataque Extra", 
-        description: "Permite realizar uno o más ataques extra este turno.", 
+        description: "Ataques adicionales este turno.", 
         baseCost: 0, 
         restrictions: [],
         options: [
-            { id: 'extra_attack_select', name: 'Ataques', type: 'select', values: [
+            { id: 'extra_attacks', name: 'Ataques', type: 'select', values: [
                 { name: '+1 ataque', cost: 3 }, { name: '+2 ataques', cost: 6 }, { name: '+3 ataques', cost: 9 }, { name: '+4 ataques', cost: 12 }
             ]},
-            DURATION_PER_TURN_OPTION(3)
+            { id: 'extra_attacks_duration', name: 'Turnos extra', type: 'select', values: [
+                { name: '1 turno', cost: 0 }, { name: '+1 turno (+3 PC)', cost: 3 }, { name: '+2 turnos (+6 PC)', cost: 6 }, { name: '+3 turnos (+9 PC)', cost: 9 }
+            ]}
         ]
     },
     {
         id: "of_dano_continuo",
         category: "Efectos ofensivos",
         name: "Daño Continuo",
-        description: "Inflige daño por ronda durante un tiempo determinado. El tipo de daño y la duración son personalizables.",
+        description: "Daño por ronda.",
         baseCost: 0, 
         restrictions: [Force.CONSERVATION, Force.CREATION],
         options: [
-            {
-                id: 'damage_amount',
-                name: 'Daño por Ronda',
-                type: 'select',
-                values: [
-                    { name: '1 Daño', cost: 3 },
-                    { name: '3 Daño', cost: 5 },
-                    { name: '6 Daño', cost: 10 },
-                    { name: '9 Daño', cost: 15 },
-                ]
-            },
-            {
-                id: 'dot_duration',
-                name: 'Duración',
-                type: 'select',
-                values: [
-                    { name: 'Una ronda', cost: 0 },
-                    { name: 'Tres rondas', cost: 3 },
-                    { name: 'Cinco rondas', cost: 6 },
-                ]
-            },
-            {
-                id: 'different_damage_type',
-                name: 'Tipo de daño diferente (+3 PC)',
-                description: 'Restringido a fuerzas: Conservación, Orden.',
-                type: 'boolean',
-                cost: 3
-            }
+            { id: 'dot_damage', name: 'Daño/Ronda', type: 'select', values: [
+                { name: '1 Daño', cost: 3 }, { name: '3 Daño', cost: 5 }, { name: '6 Daño', cost: 10 }, { name: '9 Daño', cost: 15 }
+            ]},
+            { id: 'dot_duration', name: 'Duración', type: 'select', values: [
+                { name: '1 ronda', cost: 0 }, { name: '3 rondas', cost: 3 }, { name: '5 rondas', cost: 6 }
+            ]},
+            SACRIFICE_OPTION
         ]
     },
 
@@ -305,7 +210,7 @@ export const EFFECTS: Effect[] = [
         baseCost: 0, 
         restrictions: [Force.DESTRUCTION], 
         options: [
-            { id: 'bonus_select', name: 'Bonificación', type: 'select', values: [
+            { id: 'def_bonus', name: 'Bonificación', type: 'select', values: [
                 { name: '+1', cost: 1 }, { name: '+2', cost: 3 }, { name: '+3', cost: 5 }, { name: '+4', cost: 7 }, { name: '+5', cost: 10 }
             ]},
             DURATION_PER_TURN_OPTION(2),
@@ -316,65 +221,48 @@ export const EFFECTS: Effect[] = [
         id: "def_contraataque",
         category: "Efectos defensivos",
         name: "Contrataque",
-        description: "Permite realizar un ataque al ser atacado. Opcionalmente, reemplaza su daño con el daño recibido.",
+        description: "Ataque reactivo.",
         baseCost: 0, 
         restrictions: [],
         options: [
-            {
-                id: 'counter_type',
-                name: 'Tipo de Contrataque',
-                type: 'select',
-                values: [
-                    { name: 'Ataque normal', cost: 5 },
-                    { name: 'Ataque con bono +1', cost: 7 },
-                    { name: 'Ataque con bono +2', cost: 9 },
-                    { name: 'Ataque con bono +3', cost: 11 },
-                ]
-            },
-            {
-                id: 'damage_replacement',
-                name: 'Reemplazo de Daño',
-                type: 'select',
-                values: [
-                    { name: 'Sin reemplazo', cost: 0 },
-                    { name: 'Reemplazar con mitad de daño recibido', cost: 5 },
-                    { name: 'Reemplazar con todo el daño recibido', cost: 10 },
-                ]
-            }
+            { id: 'counter_type', name: 'Tipo', type: 'select', values: [
+                { name: 'Normal', cost: 5 }, { name: 'Bono +1', cost: 7 }, { name: 'Bono +2', cost: 9 }, { name: 'Bono +3', cost: 11 }
+            ]},
+            { id: 'counter_dmg', name: 'Reemplazo Daño', type: 'select', values: [
+                { name: 'Sin reemplazo', cost: 0 }, { name: 'Mitad daño recibido', cost: 5 }, { name: 'Todo el daño recibido', cost: 10 }
+            ]}
         ]
     },
     { 
         id: "def_def_predeterminada", 
         category: "Efectos defensivos", 
         name: "Defensa Predeterminada", 
-        description: "Tu defensa se convierte en un valor fijo.", 
+        description: "Valor fijo de defensa.", 
         baseCost: 0, 
         restrictions: [], 
         options: [
-             { id: 'defense_select', name: 'Valor de Defensa', type: 'select', values: [
+             { id: 'def_fixed', name: 'Valor', type: 'select', values: [
                 { name: 'Defensa 12', cost: 6 }, { name: 'Defensa 14', cost: 10 }, { name: 'Defensa 16', cost: 15 }
             ]},
-            DURATION_OPTION
+            { id: 'def_fixed_dur', name: 'Duración', type: 'select', values: [
+                { name: '1 ronda', cost: 0 }, { name: '3 rondas', cost: 1 }, { name: '5 rondas', cost: 2 }, { name: '5 min', cost: 3 }, { name: '10 min', cost: 5 }, { name: '20 min', cost: 8 }
+            ]}
         ] 
     },
     {
         id: "def_resistencia_tipo",
         category: "Efectos defensivos",
         name: "Resistencia a Daño",
-        description: "Otorga resistencia o inmunidad contra un tipo específico de daño (fuego, corte, contundente, etc.).",
+        description: "Protección contra tipos de daño.",
         baseCost: 0,
         restrictions: [Force.DESTRUCTION],
         options: [
-            {
-                id: 'protection_level',
-                name: 'Nivel de Protección',
-                type: 'select',
-                values: [
-                    { name: 'Resistencia (Mitad de daño)', cost: 5 },
-                    { name: 'Inmunidad (Anula el daño)', cost: 12 },
-                ]
-            },
-            DURATION_OPTION
+            { id: 'prot_level', name: 'Nivel', type: 'select', values: [
+                { name: 'Resistencia', cost: 5 }, { name: 'Inmunidad', cost: 12 }
+            ]},
+            { id: 'prot_dur', name: 'Duración', type: 'select', values: [
+                { name: '1 ronda', cost: 0 }, { name: '3 rondas', cost: 1 }, { name: '5 rondas', cost: 2 }, { name: '5 min', cost: 3 }, { name: '10 min', cost: 5 }, { name: '20 min', cost: 8 }
+            ]}
         ]
     },
 
@@ -383,26 +271,28 @@ export const EFFECTS: Effect[] = [
         id: "mov_bono_mov", 
         category: "Efectos de Movimiento", 
         name: "Bono al movimiento", 
-        description: "Aumenta la distancia de movimiento.", 
+        description: "Aumenta distancia.", 
         baseCost: 0, 
         restrictions: [], 
         options: [
-            { id: 'movement_select', name: 'Distancia extra', type: 'select', values: [
-                { name: '+3 metros', cost: 1 }, { name: '+6 metros', cost: 3 }, { name: '+9 metros', cost: 6 }
+            { id: 'mov_dist', name: 'Extra', type: 'select', values: [
+                { name: '+3m', cost: 1 }, { name: '+6m', cost: 3 }, { name: '+9m', cost: 6 }
             ]},
-            DURATION_OPTION
+            { id: 'mov_dur', name: 'Duración', type: 'select', values: [
+                { name: '1 ronda', cost: 0 }, { name: '3 rondas', cost: 1 }, { name: '5 rondas', cost: 2 }, { name: '5 min', cost: 3 }, { name: '10 min', cost: 5 }, { name: '20 min', cost: 8 }
+            ]}
         ] 
     },
     { 
         id: "mov_instantaneo", 
         category: "Efectos de Movimiento", 
         name: "Movimiento Instantáneo", 
-        description: "Te mueves instantáneamente una distancia. Puede ser teletransporte.", 
+        description: "Desplazamiento rápido.", 
         baseCost: 0, 
         restrictions: [], 
         options: [
-            { id: 'distance_select', name: 'Distancia', type: 'select', values: [
-                { name: '5 metros', cost: 3 }, { name: '10 metros', cost: 6 }, { name: '15 metros', cost: 9 }
+            { id: 'mov_inst_dist', name: 'Distancia', type: 'select', values: [
+                { name: '5m', cost: 3 }, { name: '10m', cost: 6 }, { name: '15m', cost: 9 }
             ]},
             { id: 'teleport', name: 'Teletransportación (+5 PC)', type: 'boolean', cost: 5 }
         ] 
@@ -411,37 +301,16 @@ export const EFFECTS: Effect[] = [
         id: "mov_especial",
         category: "Efectos de Movimiento",
         name: "Movimiento Especial",
-        description: "Gana un tipo de movimiento especial por una duración determinada. Las restricciones de Fuerza se aplican a tipos específicos.",
+        description: "Vuelo, levitar, etc.",
         baseCost: 0, 
         restrictions: [],
         options: [
-            {
-                id: 'special_move_type',
-                name: 'Tipo de Movimiento',
-                type: 'select',
-                values: [
-                    { name: 'Levitar (mitad de velocidad)', cost: 3 },
-                    { name: 'Vuelo (velocidad normal, Restricción: Orden)', cost: 5 },
-                    { name: 'Anfibio (moverse a mitad de vel. normal)', cost: 3 },
-                    { name: 'Acuático (vel. normal bajo agua, sin respirar)', cost: 5 },
-                    { name: 'Subterráneo Menor (mitad vel., máx 3m)', cost: 3 },
-                    { name: 'Subterráneo Mayor (vel. normal, máx 3m)', cost: 5 },
-                    { name: 'Incorpóreo (ignora terreno/enemigos)', cost: 5 },
-                ]
-            },
-            {
-                id: 'special_move_duration',
-                name: 'Duración',
-                type: 'select',
-                values: [
-                    { name: 'Una ronda', cost: 0 },
-                    { name: 'Tres rondas', cost: 1 },
-                    { name: 'Cinco rondas', cost: 2 },
-                    { name: '5 minutos', cost: 3 },
-                    { name: '10 minutos', cost: 5 },
-                    { name: '20 minutos', cost: 8 },
-                ]
-            }
+            { id: 'mov_spec_type', name: 'Tipo', type: 'select', values: [
+                { name: 'Levitar', cost: 3 }, { name: 'Vuelo (Orden)', cost: 5 }, { name: 'Anfibio', cost: 3 }, { name: 'Acuático (Orden)', cost: 5 }, { name: 'Subterráneo Menor (Orden)', cost: 3 }, { name: 'Subterráneo Mayor (Orden)', cost: 5 }, { name: 'Incorpóreo (Caos/Cons/Dest)', cost: 5 }
+            ]},
+            { id: 'mov_spec_dur', name: 'Duración', type: 'select', values: [
+                { name: '1 ronda', cost: 0 }, { name: '3 rondas', cost: 1 }, { name: '5 rondas', cost: 2 }, { name: '5 min', cost: 3 }, { name: '10 min', cost: 5 }, { name: '20 min', cost: 8 }
+            ]}
         ]
     },
 
@@ -450,14 +319,16 @@ export const EFFECTS: Effect[] = [
         id: "ap_bono_tirada", 
         category: "Efectos de Apoyo", 
         name: "Bonificación a tirada", 
-        description: "Otorga un bono a una tirada situacional. Ciertas duraciones y bonos tienen restricciones.", 
+        description: "Situacional.", 
         baseCost: 0, 
         restrictions: [Force.CONSERVATION, Force.DESTRUCTION], 
         options: [
-            { id: 'bonus_select', name: 'Bonificación', type: 'select', values: [
+            { id: 'roll_bonus', name: 'Bono', type: 'select', values: [
                 { name: '+1', cost: 2 }, { name: '+2', cost: 4 }, { name: '+3', cost: 8 }, { name: '+4', cost: 12 }, { name: '+5', cost: 15 }
             ]},
-            DURATION_OPTION, 
+            { id: 'roll_bonus_dur', name: 'Duración', type: 'select', values: [
+                { name: '1 ronda', cost: 0 }, { name: '3 rondas', cost: 1 }, { name: '5 rondas', cost: 2 }, { name: '5 min', cost: 3 }, { name: '10 min', cost: 5 }, { name: '20 min', cost: 8 }
+            ]},
             SACRIFICE_OPTION
         ] 
     },
@@ -465,12 +336,12 @@ export const EFFECTS: Effect[] = [
         id: "ap_curacion_fija", 
         category: "Efectos de Apoyo", 
         name: "Curación (Fija)", 
-        description: "Recupera una cantidad fija de Resistencia.", 
+        description: "Recupera resistencia.", 
         baseCost: 0, 
         restrictions: [Force.DESTRUCTION], 
         options: [
-            { id: 'heal_select', name: 'Cantidad', type: 'select', values: [
-                { name: '3 Resistencia', cost: 3 }, { name: '5 Resistencia', cost: 5 }, { name: '8 Resistencia', cost: 8 }, { name: '12 Resistencia', cost: 12 }, { name: '15 Resistencia', cost: 15 }
+            { id: 'heal_fixed', name: 'Cantidad', type: 'select', values: [
+                { name: '3 Res', cost: 3 }, { name: '5 Res', cost: 5 }, { name: '8 Res', cost: 8 }, { name: '12 Res', cost: 12 }, { name: '15 Res', cost: 15 }
             ]},
             SACRIFICE_OPTION
         ] 
@@ -479,18 +350,18 @@ export const EFFECTS: Effect[] = [
         id: "ap_curacion_variable", 
         category: "Efectos de Apoyo", 
         name: "Curación (Variable)", 
-        description: "Recupera una cantidad variable de Resistencia. El bono y penalizador se pueden aplicar varias veces.", 
+        description: "Dados de recuperación.", 
         baseCost: 0, 
         restrictions: [Force.DESTRUCTION], 
         options: [
-            { id: 'heal_select', name: 'Cantidad', type: 'select', values: [
+            { id: 'heal_var', name: 'Dados', type: 'select', values: [
                 { name: '1d6', cost: 5 }, { name: '2d6', cost: 7 }, { name: '3d6', cost: 10 }, { name: '4d6', cost: 15 }, { name: '5d6', cost: 18 }
             ]},
-            { id: 'bonus_roll', name: 'Bono al resultado', type: 'select', values: [
-                { name: 'Ninguno', cost: 0 }, { name: '+1 al dado', cost: 2 }, { name: '+2 al dado', cost: 4 }, { name: '+3 al dado', cost: 6 }
+            { id: 'heal_roll_bonus', name: 'Bono al resultado', type: 'select', values: [
+                { name: 'Ninguno', cost: 0 }, { name: '+1', cost: 2 }, { name: '+2', cost: 4 }, { name: '+3', cost: 6 }
             ]},
-            { id: 'penalty_roll', name: 'Penalizador al resultado', type: 'select', values: [
-                { name: 'Ninguno', cost: 0 }, { name: '-1 al dado', cost: -1 }, { name: '-2 al dado', cost: -2 }, { name: '-3 al dado', cost: -3 }
+            { id: 'heal_roll_pen', name: 'Penalizador', type: 'select', values: [
+                { name: 'Ninguno', cost: 0 }, { name: '-1', cost: -1 }, { name: '-2', cost: -2 }, { name: '-3', cost: -3 }
             ]},
             SACRIFICE_OPTION
         ] 
@@ -499,34 +370,27 @@ export const EFFECTS: Effect[] = [
         id: "ap_absorcion_resistencia",
         category: "Efectos de Apoyo",
         name: "Absorción de Resistencia",
-        description: "Recuperas Resistencia igual a una porción del daño infligido.",
+        description: "Drenaje de vida.",
         baseCost: 0, 
         restrictions: [],
         options: [
-            {
-                id: 'absorb_select',
-                name: 'Cantidad Recuperada',
-                type: 'select',
-                values: [
-                    { name: 'Mitad del daño', cost: 5 },
-                    { name: 'Total del daño', cost: 8 },
-                    { name: 'Doble del daño', cost: 12 },
-                ]
-            }
+            { id: 'absorb_lvl', name: 'Nivel', type: 'select', values: [
+                { name: 'Mitad daño', cost: 5 }, { name: 'Total daño', cost: 8 }, { name: 'Doble daño', cost: 12 }
+            ]}
         ]
     },
     { 
         id: "ap_elim_estado", 
         category: "Efectos de Apoyo", 
         name: "Eliminar estado alterado", 
-        description: "Intenta eliminar un estado alterado del objetivo.", 
+        description: "Limpieza.", 
         baseCost: 0, 
         restrictions: [Force.DESTRUCTION, Force.CREATION],
         options: [
-            { id: 'remove_select', name: 'Método', type: 'select', values: [
-                { name: 'Lanzar contra ND normal', cost: 5 }, { name: 'Lanzar contra mitad de ND', cost: 7 }, { name: 'Eliminar automáticamente', cost: 15 }
+            { id: 'rem_method', name: 'Método', type: 'select', values: [
+                { name: 'ND normal', cost: 5 }, { name: 'Mitad ND', cost: 7 }, { name: 'Automático', cost: 15 }
             ]},
-            { id: 'alt_attribute', name: 'Usar Atributo diferente (+2 PC)', type: 'boolean', cost: 2 },
+            { id: 'alt_attr', name: 'Atributo diferente (+2 PC)', type: 'boolean', cost: 2 }
         ]
     },
 
@@ -535,14 +399,16 @@ export const EFFECTS: Effect[] = [
         id: "pen_pen_tirada", 
         category: "Efectos de penalización", 
         name: "Penalizador a tirada", 
-        description: "Impone un penalizador a una tirada. Penalizadores altos y duraciones tienen restricciones.", 
+        description: "Debilitamiento.", 
         baseCost: 0, 
         restrictions: [Force.CONSERVATION, Force.DESTRUCTION],
         options: [
-            { id: 'penalty_select', name: 'Penalización', type: 'select', values: [
+            { id: 'pen_roll_val', name: 'Penalización', type: 'select', values: [
                 { name: '-1', cost: 3 }, { name: '-2', cost: 5 }, { name: '-3', cost: 9 }, { name: '-4', cost: 13 }, { name: '-5', cost: 16 }
             ]},
-            DURATION_OPTION,
+            { id: 'pen_roll_dur', name: 'Duración', type: 'select', values: [
+                { name: '1 ronda', cost: 0 }, { name: '3 rondas', cost: 1 }, { name: '5 rondas', cost: 2 }, { name: '5 min', cost: 3 }, { name: '10 min', cost: 5 }, { name: '20 min', cost: 8 }
+            ]},
             SACRIFICE_OPTION
         ]
     },
@@ -550,14 +416,16 @@ export const EFFECTS: Effect[] = [
         id: "pen_pen_defensa", 
         category: "Efectos de penalización", 
         name: "Penalizador a defensa", 
-        description: "Reduce la defensa del objetivo.", 
+        description: "Ruptura de guardia.", 
         baseCost: 0, 
         restrictions: [Force.CONSERVATION],
         options: [
-             { id: 'penalty_select', name: 'Penalización', type: 'select', values: [
+             { id: 'pen_def_val', name: 'Penalización', type: 'select', values: [
                 { name: '-1', cost: 2 }, { name: '-2', cost: 4 }, { name: '-3', cost: 8 }, { name: '-4', cost: 12 }, { name: '-5', cost: 15 }
             ]},
-            PEN_DEF_DURATION_OPTION,
+            { id: 'pen_def_dur', name: 'Duración', type: 'select', values: [
+                { name: '1 ronda', cost: 0 }, { name: '3 rondas', cost: 3 }, { name: '5 rondas', cost: 6 }
+            ]},
             SACRIFICE_OPTION
         ]
     },
@@ -565,65 +433,22 @@ export const EFFECTS: Effect[] = [
         id: "pen_estado_alterado",
         category: "Efectos de penalización",
         name: "Imponer Estado Alterado",
-        description: "Impone una condición negativa al objetivo, que puede requerir una salvación para ser evitada.",
+        description: "Estados negativos.",
         baseCost: 0, 
         restrictions: [],
         options: [
-            {
-                id: 'estado_select',
-                name: 'Estado a imponer',
-                type: 'select',
-                values: [
-                    { name: 'Envenenado (1d6) (x2)', cost: 10 },
-                    { name: 'Envenenado Mayor (2d6) (x2)', cost: 16 },
-                    { name: 'Quemado (1d6) (x2)', cost: 10 },
-                    { name: 'Quemado Mayor (1d6) (x2)', cost: 16 },
-                    { name: 'Asfixiado (x2)', cost: 10 },
-                    { name: 'Inmovilizado (x2)', cost: 10 },
-                    { name: 'Aturdido (x2)', cost: 16 },
-                    { name: 'Asustado (x2)', cost: 16 },
-                    { name: 'Encantado (x2)', cost: 16 },
-                    { name: 'Controlado (x2)', cost: 20 },
-                    { name: 'Dormido (x2)', cost: 10 },
-                ]
-            },
-            {
-                id: 'multiple_estados',
-                name: 'Múltiples estados',
-                type: 'select',
-                values: [
-                    { name: 'Ninguno', cost: 0 },
-                    { name: '2 estados', cost: 3 },
-                    { name: '3 estados', cost: 7 },
-                    { name: '4 estados', cost: 12 },
-                ]
-            },
-            {
-                id: 'estado_duracion',
-                name: 'Duración',
-                type: 'select',
-                values: [
-                     { name: 'Una ronda', cost: 0 },
-                     { name: 'Tres rondas', cost: 1 },
-                     { name: 'Cinco rondas', cost: 2 },
-                     { name: '5 minutos (Restr: Cons/Dest)', cost: 5 },
-                     { name: '10 minutos (Restr: Cons/Dest)', cost: 8 },
-                     { name: '20 minutos (Restr: Cons/Dest)', cost: 12 },
-                ]
-            },
-            {
-                id: 'estado_nd',
-                name: 'ND de Salvación',
-                type: 'select',
-                values: [
-                    { name: 'Sin salvación', cost: 0 },
-                    { name: 'ND 6', cost: 2 },
-                    { name: 'ND 9', cost: 4 },
-                    { name: 'ND 12', cost: 6 },
-                    { name: 'ND 15', cost: 8 },
-                    { name: 'ND 18', cost: 12 },
-                ]
-            }
+            { id: 'estado_select', name: 'Estado', type: 'select', values: [
+                { name: 'Envenenado', cost: 6 }, { name: 'Envenenado Mayor', cost: 10 }, { name: 'Quemado', cost: 6 }, { name: 'Quemado Mayor', cost: 10 }, { name: 'Asfixiado', cost: 15 }, { name: 'Inmovilizado', cost: 6 }, { name: 'Aturdido', cost: 10 }, { name: 'Asustado', cost: 10 }, { name: 'Encantado', cost: 10 }, { name: 'Controlado', cost: 12 }, { name: 'Dormido', cost: 6 }, { name: 'Cegado', cost: 8 }, { name: 'Ensordecido', cost: 4 }
+            ]},
+            { id: 'multiple_estados', name: 'Cantidad de estados', type: 'select', values: [
+                { name: '1 estado', cost: 0 }, { name: '2 estados', cost: 3 }, { name: '3 estados', cost: 7 }, { name: '4 estados', cost: 12 }
+            ]},
+            { id: 'estado_nd', name: 'ND Salvación', type: 'select', values: [
+                { name: 'Sin salvación', cost: 0 }, { name: 'ND 6', cost: 2 }, { name: 'ND 9', cost: 4 }, { name: 'ND 12', cost: 6 }, { name: 'ND 15', cost: 8 }, { name: 'ND 18', cost: 12 }
+            ]},
+            { id: 'estado_dur', name: 'Duración', type: 'select', values: [
+                { name: '1 ronda', cost: 0 }, { name: '3 rondas', cost: 1 }, { name: '5 rondas', cost: 2 }, { name: '5 min', cost: 5 }, { name: '10 min', cost: 8 }, { name: '20 min', cost: 12 }
+            ]}
         ]
     },
 
@@ -632,97 +457,38 @@ export const EFFECTS: Effect[] = [
       id: "con_criatura", 
       category: "Convocatoria", 
       name: "Convocar Criatura", 
-      description: "Convoca una o más criaturas de un Nivel de Desafío (ND) específico.", 
+      description: "Invocación.", 
       baseCost: 0, 
       restrictions: [Force.DESTRUCTION, Force.ORDER],
       options: [
-        {
-            id: 'nd_select',
-            name: 'Nivel de Desafío (ND)',
-            type: 'select',
-            values: [
-                { name: 'ND 1/8', cost: 5 },
-                { name: 'ND 1/4', cost: 8 },
-                { name: 'ND 1/2', cost: 10 },
-                { name: 'ND 1', cost: 12 },
-                { name: 'ND 2', cost: 14 },
-                { name: 'ND 3', cost: 16 },
-                { name: 'ND 4', cost: 18 },
-            ]
-        },
-        {
-            id: 'convocatoria_duracion',
-            name: 'Duración',
-            type: 'select',
-            values: [
-                { name: 'Tres rondas', cost: 0 },
-                { name: 'Cinco rondas', cost: 3 },
-                { name: '20 minutos', cost: 5 },
-                { name: 'Un día', cost: 8 },
-                { name: 'Hasta su cancelación', cost: 10 },
-            ]
-        },
-        {
-            id: 'convocatoria_cantidad',
-            name: 'Cantidad',
-            type: 'select',
-            values: [
-                { name: '1 criatura', cost: 0 },
-                { name: '2 criaturas', cost: 5 },
-                { name: '3 criaturas', cost: 10 },
-            ]
-        }
+        { id: 'nd_val', name: 'ND', type: 'select', values: [
+            { name: 'ND 1/8', cost: 4 }, { name: 'ND 1/4', cost: 6 }, { name: 'ND 1/2', cost: 8 }, { name: 'ND 1', cost: 10 }, { name: 'ND 2', cost: 13 }, { name: 'ND 3', cost: 16 }, { name: 'ND 4 (Nivel 3)', cost: 20 }
+        ]},
+        { id: 'conv_count', name: 'Cantidad', type: 'select', values: [
+            { name: '1 criatura', cost: 0 }, { name: '2 criaturas', cost: 4 }, { name: '3 criaturas', cost: 8 }
+        ]},
+        { id: 'conv_dur', name: 'Duración', type: 'select', values: [
+            { name: '3 rondas', cost: 0 }, { name: '5 rondas', cost: 2 }, { name: '20 min', cost: 4 }, { name: '1 día', cost: 6 }, { name: 'Permanente', cost: 8 }
+        ]}
     ]
     },
     { 
       id: "con_arma_armadura", 
       category: "Convocatoria", 
-      name: "Convocar Arma o Armadura", 
-      description: "Crea un arma o armadura. Opciones de bonificación, duración y extras tienen restricciones de Fuerza específicas según el manual.",
+      name: "Convocar Arma/Armadura", 
+      description: "Creación temporal.", 
       baseCost: 0, 
       restrictions: [],
       options: [
-        {
-            id: 'bono_select',
-            name: 'Bonificación',
-            type: 'select',
-            values: [
-                { name: 'Bono +0', cost: 5 },
-                { name: 'Bono +1', cost: 8 },
-                { name: 'Bono +2', cost: 10 },
-                { name: 'Bono +3', cost: 12 },
-            ]
-        },
-        {
-            id: 'arma_duracion',
-            name: 'Duración',
-            type: 'select',
-            values: [
-                { name: 'Tres rondas', cost: 0 },
-                { name: 'Cinco rondas', cost: 2 },
-                { name: '20 minutos', cost: 4 },
-                { name: 'Un día', cost: 6 },
-                { name: 'Hasta su cancelación', cost: 8 },
-            ]
-        },
-        {
-            id: 'opcional_elemental',
-            name: 'Atributo Elemental (+3 PC)',
-            type: 'boolean',
-            cost: 3,
-        },
-        {
-            id: 'opcional_arma_extra',
-            name: 'Arma Extra (+3 PC)',
-            type: 'boolean',
-            cost: 3
-        },
-        {
-            id: 'opcional_ignorar_req',
-            name: 'Ignorar Requisitos (+5 PC)',
-            type: 'boolean',
-            cost: 5
-        }
+        { id: 'equip_bonus', name: 'Bono', type: 'select', values: [
+            { name: 'Bono +0', cost: 4 }, { name: 'Bono +1', cost: 6 }, { name: 'Bono +2', cost: 9 }, { name: 'Bono +3', cost: 12 }
+        ]},
+        { id: 'equip_dur', name: 'Duración', type: 'select', values: [
+            { name: '3 rondas', cost: 0 }, { name: '5 rondas', cost: 1 }, { name: '20 min', cost: 3 }, { name: '1 día', cost: 5 }, { name: 'Permanente', cost: 7 }
+        ]},
+        { id: 'elemental_equip', name: 'Elemental (+2 PC)', type: 'boolean', cost: 2 },
+        { id: 'extra_weapon', name: 'Arma Extra (+3 PC)', type: 'boolean', cost: 3 },
+        { id: 'ignore_req', name: 'Ignorar Requisitos (+4 PC)', type: 'boolean', cost: 4 }
       ]
     },
 
@@ -731,317 +497,138 @@ export const EFFECTS: Effect[] = [
         id: "var_ilusion",
         category: "Efectos Varios",
         name: "Ilusión",
-        description: "Crea una ilusión que afecta uno o más sentidos. Puede tener una salvación para ser desacreditada.",
+        description: "Engaño visual/auditivo.",
         baseCost: 0, 
         restrictions: [],
         options: [
-            {
-                id: 'ilusion_type',
-                name: 'Tipo de Ilusión',
-                type: 'select',
-                values: [
-                    { name: 'Ilusión Olfativa', cost: 3 },
-                    { name: 'Ilusión Visual', cost: 3 },
-                    { name: 'Ilusión Táctil', cost: 3 },
-                    { name: 'Ilusión Completa', cost: 7 },
-                ]
-            },
-            {
-                id: 'ilusion_duration',
-                name: 'Duración',
-                type: 'select',
-                values: [
-                     { name: 'Una ronda', cost: 0 },
-                     { name: 'Tres rondas', cost: 1 },
-                     { name: 'Cinco rondas', cost: 2 },
-                     { name: '5 minutos (Restr: Cons/Dest)', cost: 5 },
-                     { name: '10 minutos (Restr: Cons/Dest)', cost: 8 },
-                     { name: '20 minutos (Restr: Cons/Dest)', cost: 12 },
-                ]
-            },
-            {
-                id: 'ilusion_nd',
-                name: 'ND de Salvación',
-                type: 'select',
-                values: [
-                    { name: 'Sin salvación', cost: 0 },
-                    { name: 'ND 6', cost: 0 },
-                    { name: 'ND 9', cost: 2 },
-                    { name: 'ND 12', cost: 4 },
-                    { name: 'ND 15', cost: 6 },
-                ]
-            }
+            { id: 'ilu_type', name: 'Tipo', type: 'select', values: [
+                { name: 'Olfativa', cost: 3 }, { name: 'Visual', cost: 3 }, { name: 'Táctil', cost: 3 }, { name: 'Auditiva', cost: 3 }, { name: 'Completa', cost: 7 }
+            ]},
+            { id: 'ilu_dur', name: 'Duración', type: 'select', values: [
+                { name: '1 ronda', cost: 0 }, { name: '3 rondas', cost: 1 }, { name: '5 rondas', cost: 2 }, { name: '5 min', cost: 5 }, { name: '10 min', cost: 8 }, { name: '20 min', cost: 12 }
+            ]},
+            { id: 'ilu_nd', name: 'ND Desacreditar', type: 'select', values: [
+                { name: 'Sin salvación', cost: 0 }, { name: 'ND 6', cost: 0 }, { name: 'ND 9', cost: 2 }, { name: 'ND 12', cost: 4 }, { name: 'ND 15', cost: 6 }
+            ]}
         ]
     },
     {
         id: "var_uso_indirecto",
         category: "Efectos Varios",
         name: "Uso Indirecto",
-        description: "La técnica se origina desde otro elemento (nube, espinas del suelo, etc), no desde el usuario. El coste depende del nivel de la técnica.",
+        description: "Origen desde otro elemento.",
         baseCost: 0, 
-        restrictions: [Force.TRANSFORMATION],
+        restrictions: [], // Required: Transformation, Creation
         options: [
-             {
-                id: 'indirect_use_level',
-                name: 'Nivel de la técnica',
-                type: 'select',
-                values: [
-                    { name: 'Nivel Apoyo', cost: 2 },
-                    { name: 'Nivel 1', cost: 4 },
-                    { name: 'Nivel 2', cost: 6 },
-                    { name: 'Nivel 3', cost: 8 },
-                ]
-            }
+             { id: 'ind_lvl', name: 'Nivel Técnica', type: 'select', values: [
+                { name: 'Nivel 0', cost: 2 }, { name: 'Nivel 1', cost: 4 }, { name: 'Nivel 2', cost: 6 }, { name: 'Nivel 3', cost: 8 }
+            ]},
+            { id: 'ind_persist', name: 'Manifestación Persistente', type: 'select', values: [
+                { name: 'Instantánea', cost: 0 }, { name: '+1 turno (+3 PC)', cost: 3 }, { name: '+2 turnos (+6 PC)', cost: 6 }, { name: '+3 turnos (+9 PC)', cost: 9 }
+            ]}
         ]
     },
     {
-        id: "var_accion_extra",
+        id: "var_como_reaccion",
         category: "Efectos Varios",
-        name: "Acción Adicional",
-        description: "Gana acciones adicionales este turno. Algunas opciones tienen restricciones de Fuerza.",
-        baseCost: 0, 
+        name: "Como Reacción",
+        description: "Solo para Nivel 0 y 1.",
+        baseCost: 0,
         restrictions: [],
         options: [
-             {
-                id: 'extra_action_type',
-                name: 'Tipo de Acción Extra',
-                type: 'select',
-                values: [
-                    { name: 'Moverse dos veces', cost: 3 },
-                    { name: 'Moverse tres veces (Restr: Orden)', cost: 6 },
-                    { name: 'Acción Adicional', cost: 6 },
-                    { name: 'Turno adicional (Restr: Orden)', cost: 12 },
-                ]
-            }
+            { id: 'react_lvl', name: 'Nivel Técnica', type: 'select', values: [
+                { name: 'Nivel 0', cost: 3 }, { name: 'Nivel 1', cost: 5 }
+            ]}
         ]
     },
     {
         id: "var_accion_rapida",
         category: "Efectos Varios",
         name: "Acción Rápida",
-        description: "Convierte la técnica de Acción Principal a Acción Rápida. El coste depende del nivel de la técnica.",
+        description: "Conversión de tiempo de uso.",
         baseCost: 0,
         restrictions: [],
         options: [
-            {
-                id: 'quick_action_level',
-                name: 'Nivel de la técnica',
-                type: 'select',
-                values: [
-                    { name: 'Nivel Apoyo', cost: 2 },
-                    { name: 'Nivel 1', cost: 5 },
-                    { name: 'Nivel 2', cost: 7 },
-                    { name: 'Nivel 3', cost: 10 },
-                ]
-            }
+            { id: 'quick_lvl', name: 'Nivel Técnica', type: 'select', values: [
+                { name: 'Nivel 0', cost: 2 }, { name: 'Nivel 1', cost: 5 }, { name: 'Nivel 2', cost: 7 }, { name: 'Nivel 3', cost: 10 }
+            ]}
         ]
     },
     {
         id: "var_comunicacion_mental",
         category: "Efectos Varios",
         name: "Comunicación Mental",
-        description: "Establece un vínculo telepático con uno o más objetivos para comunicarte en silencio.",
+        description: "Telepatía.",
         baseCost: 0,
         restrictions: [],
         options: [
-            {
-                id: 'telepathy_range',
-                name: 'Alcance',
-                type: 'select',
-                values: [
-                    { name: '10 metros', cost: 2 },
-                    { name: '100 metros', cost: 4 },
-                    { name: '1 kilómetro', cost: 6 },
-                    { name: 'Cualquier lugar (mismo plano)', cost: 10 },
-                ]
-            },
-            {
-                id: 'telepathy_targets',
-                name: 'Objetivos',
-                type: 'select',
-                values: [
-                    { name: 'Un objetivo', cost: 0 },
-                    { name: 'Hasta 3 objetivos', cost: 3 },
-                    { name: 'Hasta 5 objetivos', cost: 5 },
-                ]
-            },
-            {
-                id: 'telepathy_duration',
-                name: 'Duración',
-                type: 'select',
-                values: [
-                    { name: '1 minuto', cost: 0 },
-                    { name: '10 minutos', cost: 2 },
-                    { name: '1 hora', cost: 4 },
-                ]
-            },
-            {
-                id: 'two_way_comm',
-                name: 'Comunicación Bidireccional (+3 PC)',
-                description: 'El objetivo también puede responder telepáticamente.',
-                type: 'boolean',
-                cost: 3,
-            }
-        ]
-    },
-    {
-        id: "var_perspicacia",
-        category: "Efectos Varios",
-        name: "Perspicacia Sobrenatural",
-        description: "Obtienes una ventaja en situaciones sociales o de investigación, pudiendo leer intenciones o encontrar pistas ocultas.",
-        baseCost: 0,
-        restrictions: [Force.DESTRUCTION, Force.CHAOS],
-        options: [
-            {
-                id: 'insight_type',
-                name: 'Tipo de Perspicacia',
-                type: 'select',
-                values: [
-                    { name: 'Bono +3 a tiradas sociales', cost: 3 },
-                    { name: 'Bono +3 a tiradas de investigación', cost: 3 },
-                    { name: 'Bono +5 a tiradas sociales', cost: 6 },
-                    { name: 'Bono +5 a tiradas de investigación', cost: 6 },
-                ]
-            },
-            {
-                id: 'detect_lies',
-                name: 'Detectar Mentiras Automáticamente (+8 PC)',
-                description: 'Sabes instintivamente si alguien te está mintiendo directamente. Restricción: Orden.',
-                type: 'boolean',
-                cost: 8,
-            },
-            {
-                id: 'read_surface_thoughts',
-                name: 'Leer Pensamientos Superficiales (+10 PC)',
-                description: 'Puedes escuchar los pensamientos activos y superficiales de un objetivo. Requiere concentración. Restricción: Orden, Creación.',
-                type: 'boolean',
-                cost: 10,
-            }
-        ]
-    },
-    {
-        id: "var_creacion_menor",
-        category: "Efectos Varios",
-        name: "Creación Menor",
-        description: "Crea un objeto pequeño y no mágico a partir de la nada o de materiales simples.",
-        baseCost: 0,
-        restrictions: [Force.DESTRUCTION, Force.CONSERVATION, Force.ORDER, Force.CHAOS],
-        options: [
-            {
-                id: 'creation_complexity',
-                name: 'Complejidad del Objeto',
-                type: 'select',
-                values: [
-                    { name: 'Objeto simple y pequeño (llave, taza)', cost: 2 },
-                    { name: 'Herramienta simple (martillo, palanca)', cost: 4 },
-                    { name: 'Objeto con partes móviles simples (polea)', cost: 6 },
-                ]
-            },
-            {
-                id: 'creation_duration',
-                name: 'Duración del Objeto',
-                type: 'select',
-                values: [
-                    { name: '10 minutos', cost: 0 },
-                    { name: '1 hora', cost: 2 },
-                    { name: 'Permanente (pero frágil)', cost: 5 },
-                    { name: 'Permanente y duradero', cost: 8 },
-                ]
-            }
+            { id: 'tele_range', name: 'Alcance', type: 'select', values: [
+                { name: '10m', cost: 2 }, { name: '100m', cost: 4 }, { name: '1km', cost: 6 }, { name: 'Plano', cost: 10 }
+            ]},
+            { id: 'tele_targets', name: 'Objetivos', type: 'select', values: [
+                { name: '1 objetivo', cost: 0 }, { name: 'Hasta 3', cost: 3 }, { name: 'Hasta 5', cost: 5 }
+            ]},
+            { id: 'tele_dur', name: 'Duración', type: 'select', values: [
+                { name: '1 min', cost: 0 }, { name: '10 min', cost: 2 }, { name: '1 hora', cost: 4 }
+            ]},
+            { id: 'tele_bi', name: 'Bidireccional (+3 PC)', type: 'boolean', cost: 3 }
         ]
     },
     {
         id: "var_sentidos_agudizados",
         category: "Efectos Varios",
         name: "Sentidos Agudizados",
-        description: "Mejora uno de tus sentidos más allá de los límites normales, otorgando nuevas formas de percepción.",
+        description: "Mejora perceptiva.",
         baseCost: 0,
         restrictions: [],
         options: [
-            {
-                id: 'sense_type',
-                name: 'Sentido Mejorado',
-                type: 'select',
-                values: [
-                    { name: 'Visión en la oscuridad (20m)', cost: 3 },
-                    { name: 'Oído agudo (doble distancia)', cost: 2 },
-                    { name: 'Olfato agudo (rastrear por olor)', cost: 4 },
-                    { name: 'Visión telescópica (ver x5 más lejos)', cost: 3 },
-                    { name: 'Percepción sísmica (sentir vibraciones 10m)', cost: 5 },
-                ]
-            },
-            DURATION_OPTION
+            { id: 'sense_type', name: 'Tipo', type: 'select', values: [
+                { name: 'Visión Oscuridad', cost: 3 }, { name: 'Oído Agudo', cost: 2 }, { name: 'Olfato Agudo', cost: 4 }, { name: 'Telescópica', cost: 3 }, { name: 'Percepción Sísmica', cost: 5 }
+            ]},
+            { id: 'sense_dur', name: 'Duración', type: 'select', values: [
+                { name: '1 ronda', cost: 0 }, { name: '3 rondas', cost: 1 }, { name: '5 rondas', cost: 2 }, { name: '5 min', cost: 3 }, { name: '10 min', cost: 5 }, { name: '20 min', cost: 8 }
+            ]}
         ]
     },
-
 
     // 8. Efectos de Dominio
     {
         id: "dom_terreno",
         category: "Efectos de Dominio",
         name: "Dominio del Terreno",
-        description: "Transforma o controla el terreno físico en un área determinada.",
+        description: "Control físico.",
         baseCost: 0,
         restrictions: [],
         options: [
-             {
-                id: 'terrain_effect',
-                name: 'Efecto de Terreno',
-                type: 'select',
-                values: [
-                    { name: 'Terreno Difícil (Mitad movimiento)', cost: 3 },
-                    { name: 'Terreno Peligroso (Daño al entrar/empezar)', cost: 6 },
-                    { name: 'Terreno Intransitable (Muros/Foso)', cost: 10 },
-                ]
-            },
-            {
-                id: 'terrain_area',
-                name: 'Área Afectada',
-                type: 'select',
-                values: [
-                    { name: 'Radio 5m', cost: 3 },
-                    { name: 'Radio 10m', cost: 6 },
-                    { name: 'Radio 20m', cost: 9 },
-                ]
-            },
-            DURATION_OPTION
+             { id: 'terr_eff', name: 'Efecto', type: 'select', values: [
+                { name: 'Terreno Difícil', cost: 3 }, { name: 'Peligroso', cost: 6 }, { name: 'Intransitable', cost: 10 }
+            ]},
+            { id: 'terr_rad', name: 'Radio', type: 'select', values: [
+                { name: '5m', cost: 3 }, { name: '10m', cost: 6 }, { name: '20m', cost: 9 }
+            ]},
+            { id: 'terr_dur', name: 'Duración', type: 'select', values: [
+                { name: '1 ronda', cost: 0 }, { name: '3 rondas', cost: 1 }, { name: '5 rondas', cost: 2 }, { name: '5 min', cost: 3 }, { name: '10 min', cost: 5 }, { name: '20 min', cost: 8 }
+            ]}
         ]
     },
     {
         id: "dom_presencia",
         category: "Efectos de Dominio",
         name: "Presencia Avasalladora",
-        description: "Tu mera presencia impone una carga mental sobre los objetivos.",
+        description: "Carga mental.",
         baseCost: 0,
         restrictions: [],
         options: [
-             {
-                id: 'presence_effect',
-                name: 'Efecto',
-                type: 'select',
-                values: [
-                    { name: 'Miedo (Desventaja en ataques)', cost: 5 },
-                    { name: 'Parálisis (Requiere salvación)', cost: 10 },
-                    { name: 'Sumisión (Obedecen órdenes simples)', cost: 15 },
-                ]
-            },
-            {
-                 id: 'presence_target',
-                 name: 'Objetivos',
-                 type: 'select',
-                 values: [
-                     { name: 'Un objetivo', cost: 0 },
-                     { name: 'Hasta 3 objetivos', cost: 5 },
-                     { name: 'Todos los enemigos en 10m', cost: 10 },
-                 ]
-            },
-            {
-                id: 'selective_presence',
-                name: 'Selectividad (+3 PC)',
-                type: 'boolean',
-                cost: 3
-            },
-            DURATION_OPTION
+             { id: 'pres_eff', name: 'Efecto', type: 'select', values: [
+                { name: 'Miedo', cost: 5 }, { name: 'Parálisis', cost: 10 }, { name: 'Sumisión', cost: 15 }
+            ]},
+            { id: 'pres_target', name: 'Objetivos', type: 'select', values: [
+                { name: 'Un objetivo', cost: 0 }, { name: 'Hasta 3', cost: 5 }, { name: 'Todos en 10m', cost: 10 }
+            ]},
+            { id: 'pres_sel', name: 'Selectividad (+3 PC)', type: 'boolean', cost: 3 },
+            { id: 'pres_dur', name: 'Duración', type: 'select', values: [
+                { name: '1 ronda', cost: 0 }, { name: '3 rondas', cost: 1 }, { name: '5 rondas', cost: 2 }, { name: '5 min', cost: 3 }, { name: '10 min', cost: 5 }, { name: '20 min', cost: 8 }
+            ]}
         ]
     },
     
@@ -1050,42 +637,144 @@ export const EFFECTS: Effect[] = [
     { 
         id: "des_agotamiento", 
         category: "Desventajas", 
-        name: "Desventaja: Agotamiento", 
-        description: "Tras usarla, no puedes moverte ni atacar por un número de rondas.", 
+        name: "Agotamiento", 
+        description: "Incapacidad post-uso.", 
         baseCost: 0, 
         restrictions: [],
         options: [
-            { id: 'exhaust_select', name: 'Duración', type: 'select', values: [
-                { name: '1 ronda', cost: -5 }, { name: '2 rondas', cost: -10 }, { name: '3 rondas', cost: -15 }
+            { id: 'exh_val', name: 'Duración', type: 'select', values: [
+                { name: '1 ronda', cost: -4 }, { name: '2 rondas', cost: -8 }, { name: '3 rondas', cost: -12 }
+            ]}
+        ]
+    },
+    {
+        id: "des_fatiga",
+        category: "Desventajas",
+        name: "Fatiga",
+        description: "Penalizador acumulativo.",
+        baseCost: 0,
+        restrictions: [],
+        options: [
+            { id: 'fat_val', name: 'Niveles', type: 'select', values: [
+                { name: '1 nivel', cost: -3 }, { name: '2 niveles', cost: -6 }, { name: '3 niveles', cost: -9 }
             ]}
         ]
     },
     {
         id: "des_atadura",
         category: "Desventajas",
-        name: "Desventaja: Atadura",
-        description: "Requiere usar un objeto o arma para ejecutar la técnica. Restricción de Fuerza: Transformación.",
+        name: "Atadura",
+        description: "Requisito de equipamiento.",
         baseCost: 0, 
         restrictions: [Force.TRANSFORMATION],
         options: [
-            {
-                id: 'tether_type',
-                name: 'Tipo de Atadura',
-                type: 'select',
-                values: [
-                    { name: 'Objeto Tótem', cost: -5 },
-                    { name: 'Empuñar Arma Genérica', cost: -5 },
-                    { name: 'Empuñar Arma Específica', cost: -10 },
-                    { name: 'Usar Armadura o escudo genérico', cost: -2 },
-                    { name: 'Usar armadura o escudo específico', cost: -5 },
-                ]
-            }
+            { id: 'teth_type', name: 'Tipo', type: 'select', values: [
+                { name: 'Objeto Tótem', cost: -4 }, { name: 'Arma Genérica', cost: -3 }, { name: 'Arma Específica', cost: -6 }, { name: 'Escudo Genérico', cost: -2 }, { name: 'Escudo Específico', cost: -4 }, { name: 'Consumir Material', cost: -3 }
+            ]}
         ]
     },
-    { ...circumstanceDisadvantage, id: 'des_circunstancia_1', name: 'Desventaja: Circunstancia 1' },
-    { ...circumstanceDisadvantage, id: 'des_circunstancia_2', name: 'Desventaja: Circunstancia 2' },
-    { ...circumstanceDisadvantage, id: 'des_circunstancia_3', name: 'Desventaja: Circunstancia 3' },
-    { ...penalizadorDisadvantage, id: 'des_penalizador_1', name: 'Desventaja: Penalizador 1' },
-    { ...penalizadorDisadvantage, id: 'des_penalizador_2', name: 'Desventaja: Penalizador 2' },
-    { ...penalizadorDisadvantage, id: 'des_penalizador_3', name: 'Desventaja: Penalizador 3' },
+    {
+        id: "des_circunstancia",
+        category: "Desventajas",
+        name: "Circunstancia",
+        description: "Limitación situacional.",
+        baseCost: 0, 
+        restrictions: [Force.TRANSFORMATION],
+        options: [
+            { id: 'circ_type', name: 'Situación', type: 'select', values: [
+                { name: 'Mitad Resistencia', cost: -4 }, { name: 'Estado alterado', cost: -3 }, { name: 'Arma envainada', cost: -2 }, { name: 'Volando', cost: -3 }, { name: 'Sobre montura', cost: -3 }, { name: 'Día', cost: -4 }, { name: 'Noche', cost: -4 }, { name: 'Terreno específico', cost: -4 }, { name: 'Contra criatura específica', cost: -4 }, { name: 'Aliado cerca', cost: -3 }
+            ]}
+        ]
+    },
+    {
+        id: "des_penalizador",
+        category: "Desventajas",
+        name: "Efectos Negativos Post-Uso",
+        description: "Consecuencias inmediatas.",
+        baseCost: 0,
+        restrictions: [],
+        options: [
+            { id: 'neg_type', name: 'Efecto', type: 'select', values: [
+                { name: 'Penalizador Acción -1', cost: -2 }, { name: 'Penalizador Acción -2', cost: -3 }, { name: 'Penalizador Acción -3', cost: -4 }, { name: 'Sufre Estado Alterado', cost: -3 }, { name: 'Pérdida Sentido', cost: -4 }, { name: 'Defensa mitad', cost: -4 }, { name: 'Defensa 0', cost: -6 }, { name: 'Sobrecarga menor', cost: -3 }, { name: 'Sobrecarga mayor', cost: -5 }, { name: 'Movimiento mitad', cost: -2 }, { name: 'Sin Reacciones', cost: -3 }
+            ]}
+        ]
+    },
+    {
+        id: "des_tiempo_carga",
+        category: "Desventajas",
+        name: "Tiempo de Carga",
+        description: "Preparación previa.",
+        baseCost: 0,
+        restrictions: [],
+        options: [
+            { id: 'charge_val', name: 'Requisito', type: 'select', values: [
+                { name: 'Acción Rápida previa', cost: -3 }, { name: 'Acción Principal previa', cost: -5 }, { name: '2 turnos preparación', cost: -8 }
+            ]}
+        ]
+    },
+    {
+        id: "des_dano_propio",
+        category: "Desventajas",
+        name: "Daño Propio",
+        description: "Sacrificio de vitalidad.",
+        baseCost: 0,
+        restrictions: [],
+        options: [
+            { id: 'self_dmg', name: 'Daño Recibido', type: 'select', values: [
+                { name: '1d6 daño', cost: -3 }, { name: '2d6 daño', cost: -5 }, { name: '3d6 daño', cost: -7 }, { name: 'Mitad Resistencia actual', cost: -10 }
+            ]}
+        ]
+    },
+    {
+        id: "des_alcance_limitado",
+        category: "Desventajas",
+        name: "Alcance Limitado",
+        description: "Solo para distancia/área.",
+        baseCost: 0,
+        restrictions: [],
+        options: [
+            { id: 'range_lim', name: 'Restricción', type: 'select', values: [
+                { name: 'Alcance mitad', cost: -2 }, { name: 'Toque (Cuerpo a cuerpo)', cost: -4 }, { name: 'Área mitad', cost: -3 }
+            ]}
+        ]
+    },
+    {
+        id: "des_predecible",
+        category: "Desventajas",
+        name: "Predecible",
+        description: "Señales claras.",
+        baseCost: 0,
+        restrictions: [],
+        options: [
+            { id: 'pred_val', name: 'Efecto', type: 'select', values: [
+                { name: 'Ventaja en salvaciones rival', cost: -4 }, { name: '+2 Defensa rival', cost: -3 }, { name: 'Anunciar objetivo', cost: -2 }
+            ]}
+        ]
+    },
+    {
+        id: "des_inestable",
+        category: "Desventajas",
+        name: "Inestable",
+        description: "Solo para Caos.",
+        baseCost: 0,
+        restrictions: [], // Required: Chaos
+        options: [
+            { id: 'inst_val', name: 'Efecto', type: 'select', values: [
+                { name: '1d6: 1 falla', cost: -3 }, { name: '1d6: 1-2 falla', cost: -5 }, { name: '1d6: 1 afecta aliado', cost: -4 }
+            ]}
+        ]
+    },
+    {
+        id: "des_sacrificio_req",
+        category: "Desventajas",
+        name: "Requisito de Sacrificio",
+        description: "Algo más que resistencia.",
+        baseCost: 0,
+        restrictions: [],
+        options: [
+            { id: 'sac_val', name: 'Sacrificio', type: 'select', values: [
+                { name: 'Objeto de valor', cost: -3 }, { name: 'Sangre propia (1 daño)', cost: -2 }, { name: 'Descalzo', cost: -1 }, { name: 'Pronunciar invocación', cost: -2 }
+            ]}
+        ]
+    }
 ];

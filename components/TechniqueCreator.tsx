@@ -47,7 +47,6 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
   const isInitialMount = useRef(true);
 
   useEffect(() => {
-    // Don't scroll on the initial render, only on subsequent level changes.
     if (isInitialMount.current) {
         isInitialMount.current = false;
         return;
@@ -72,14 +71,12 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
   };
 
   const isEffectCompatible = (effect: Effect): boolean => {
-      if (!technique.force) return true; // Show all if no force selected
+      if (!technique.force) return true; 
       if (effect.restrictions.length === 0) return true;
       return !effect.restrictions.includes(technique.force);
   };
   
   const canAddEffect = (): boolean => {
-      // Allow adding effects as long as a power level is selected.
-      // The UI will warn the user if they go over budget, but won't block them.
       return !!technique.level;
   };
   
@@ -94,6 +91,12 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
         return newSet;
     });
   };
+
+  // Check disadvantage limit
+  const disadvantageSum = technique.effects
+    .filter(e => e.finalCost < 0)
+    .reduce((sum, e) => sum + e.finalCost, 0);
+  const isOverLimit = disadvantageSum < -12;
 
   return (
     <div className="space-y-8">
@@ -148,7 +151,7 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
                 <h3 className="font-semibold mb-2 text-slate-300">Fuerza Dominante</h3>
                 <div className="flex flex-wrap gap-2">
                     {Object.values(Force).map(force => (
-                        <button key={force} onClick={() => setForce(force)} className={`px-3 py-1 text-sm rounded-full transition ${technique.force === force ? `bg-${FORCES[force].color}-500 text-white font-bold` : 'bg-slate-700 hover:bg-slate-600 text-slate-200'}`}>
+                        <button key={force} onClick={() => setForce(force)} className={`px-3 py-1 text-sm rounded-full transition ${technique.force === force ? `bg-orange-500 text-white font-bold` : 'bg-slate-700 hover:bg-slate-600 text-slate-200'}`}>
                             {force}
                         </button>
                     ))}
@@ -172,11 +175,20 @@ const TechniqueCreator: React.FC<TechniqueCreatorProps> = ({
                       </span>
                   </div>
                   <ProgressBar value={totalPcCost} max={pcBudget} />
-                  {totalPcCost > pcBudget && (
-                      <p className="text-xs text-rose-500 text-right mt-1">
-                          ¡Presupuesto excedido!
+                  <div className="flex justify-between mt-1">
+                    {isOverLimit ? (
+                      <p className="text-xs text-amber-500 font-medium">
+                        ⚠️ Límite de desventajas alcanzado (-12 PC máx.)
                       </p>
-                  )}
+                    ) : (
+                      <span />
+                    )}
+                    {totalPcCost > pcBudget && (
+                        <p className="text-xs text-rose-500">
+                            ¡Presupuesto excedido!
+                        </p>
+                    )}
+                  </div>
               </div>
 
               <div className="space-y-2">
